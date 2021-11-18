@@ -114,6 +114,48 @@ public final class LowLevel {
          * @see LowLevel.SDL2Library#SDL_QuitSubSystem
          */
         public int SDL_InitSubSystem(int flags);
+
+        /**
+         * <p>Shut down specific SDL subsystems.
+         *
+         * <p>If you start a subsystem using a call to that subsystem's init function
+         * (for example SDL_VideoInit()) instead of SDL_Init() or SDL_InitSubSystem(),
+         * SDL_QuitSubSystem() and SDL_WasInit() will not work. You will need to use
+         * that subsystem's quit function (SDL_VideoQuit()) directly instead. But
+         * generally, you should not be using those functions directly anyhow; use
+         * SDL_Init() instead.</p>
+         *
+         * <p>You still need to call SDL_Quit() even if you close all open subsystems
+         * with SDL_QuitSubSystem().</p>
+         *
+         * @param flags any of the flags used by SDL_Init(); see SDL_Init for details.
+         *
+         * @see LowLevel.SDL2Library#SDL_InitSubSystem
+         * @see LowLevel.SDL2Library#SDL_Quit
+         */
+        public void SDL_QuitSubSystem(int flags);
+
+        /**
+         * <p>Clean up all initialized subsystems.</p>
+         *
+         * <p>You should call this function even if you have already shutdown each
+         * initialized subsystem with SDL_QuitSubSystem(). It is safe to call this
+         * function even in the case of errors in initialization.</p>
+         *
+         * <p>If you start a subsystem using a call to that subsystem's init function
+         * (for example SDL_VideoInit()) instead of SDL_Init() or SDL_InitSubSystem(),
+         * then you must use that subsystem's quit function (SDL_VideoQuit()) to shut
+         * it down before calling SDL_Quit(). But generally, you should not be using
+         * those functions directly anyhow; use SDL_Init() instead.</p>
+         *
+         * <p>You can use this function with atexit() to ensure that it is run when your
+         * application is shutdown, but it is not wise to do this from a library or
+         * other dynamically loaded code.</p>
+         *
+         * @see LowLevel.SDL2Library#SDL_Init
+         * @see LowLevel.SDL2Library#SDL_QuitSubSystem
+         */
+        public void SDL_Quit();
         //#endregion
 
         //#region SDL_error.h
@@ -1056,6 +1098,57 @@ public final class LowLevel {
          * @see LowLevel.SDL2Library#SDL_UnlockMutex
          */
         public Pointer SDL_CreateMutex();
+
+        /**
+         * <p>Lock the mutex.</p>
+         *
+         * <p>This will block until the mutex is available, which is to say it is in the
+         * unlocked state and the OS has chosen the caller as the next thread to lock
+         * it. Of all threads waiting to lock the mutex, only one may do so at a time.</p>
+         *
+         * <p>It is legal for the owning thread to lock an already-locked mutex. It must
+         * unlock it the same number of times before it is actually made available for
+         * other threads in the system (this is known as a "recursive mutex").</p>
+         *
+         * @param mutex the mutex to lock
+         * @return 0, or -1 on error.
+         */
+        public int SDL_LockMutex(Pointer mutex);
+
+        /**
+         * <p>Unlock the mutex.</p>
+         *
+         * <p>It is legal for the owning thread to lock an already-locked mutex. It must
+         * unlock it the same number of times before it is actually made available for
+         * other threads in the system (this is known as a "recursive mutex").</p>
+         *
+         * <p>It is an error to unlock a mutex that has not been locked by the current
+         * thread, and doing so results in undefined behavior.</p>
+         *
+         * <p>It is also an error to unlock a mutex that isn't locked at all.</p>
+         *
+         * @param mutex the mutex to unlock.
+         * @return 0, or -1 on error.
+         */
+        public int SDL_UnlockMutex(Pointer mutex);
+
+        /**
+         * <p>Destroy a mutex created with SDL_CreateMutex().</p>
+         *
+         * <p>This function must be called on any mutex that is no longer needed. Failure
+         * to destroy a mutex will result in a system memory or resource leak. While
+         * it is safe to destroy a mutex that is <i>unlocked</i>, it is not safe to attempt
+         * to destroy a locked mutex, and may result in undefined behavior depending
+         * on the platform.</p>
+         *
+         * @param mutex the mutex to destroy
+         *
+         * @see LowLevel.SDL2Library#SDL_CreateMutex
+         * @see LowLevel.SDL2Library#SDL_LockMutex
+         * @see LowLevel.SDL2Library#SDL_TryLockMutex
+         * @see LowLevel.SDL2Library#SDL_UnlockMutex
+         */
+        public void SDL_DestroyMutex(Pointer mutex);
         //#endregion
 
         //#region SDL_stdinc.h

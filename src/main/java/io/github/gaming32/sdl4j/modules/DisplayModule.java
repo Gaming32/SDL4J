@@ -47,4 +47,17 @@ public final class DisplayModule implements Module {
         TimeModule.getInstance().init();
         EventModule.getInstance().init();
     }
+
+    @Override
+    public void quit() {
+        SDL2Library lib = LowLevel.getInstance();
+        // TODO: Manage display state
+
+        TimeModule.getInstance().quit();
+        EventModule.getInstance().quit();
+
+        if (lib.SDL_WasInit(SDL2Library.SDL_INIT_VIDEO) != 0) {
+            lib.SDL_QuitSubSystem(SDL2Library.SDL_INIT_VIDEO);
+        }
+    }
 }

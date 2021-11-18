@@ -21,4 +21,8 @@ public final class SampleModule implements Module {
     @Override
     public void init() {
     }
+
+    @Override
+    public void quit() {
+    }
 }

@@ -31,4 +31,15 @@ public final class JoystickModule implements Module {
             lib.SDL_JoystickEventState(SDL2Library.SDL_ENABLE);
         }
     }
+
+    @Override
+    public void quit() {
+        SDL2Library lib = LowLevel.getInstance();
+        // TODO: Close joysticks
+
+        if (lib.SDL_WasInit(SDL2Library.SDL_INIT_JOYSTICK) != 0) {
+            lib.SDL_JoystickEventState(SDL2Library.SDL_ENABLE);
+            lib.SDL_QuitSubSystem(SDL2Library.SDL_INIT_JOYSTICK);
+        }
+    }
 }

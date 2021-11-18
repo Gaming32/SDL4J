@@ -68,6 +68,18 @@ public final class EventModule implements Module {
         isInit = true;
     }
 
+    @Override
+    public void quit() {
+        SDL2Library lib = LowLevel.getInstance();
+        if (isInit) {
+            if (repeatTimer != 0) {
+                lib.SDL_RemoveTimer(repeatTimer);
+                repeatTimer = 0;
+            }
+        }
+        isInit = false;
+    }
+
     private boolean eventFilter(Pointer ignored, SDL_Event event) {
         SDL2Library lib = LowLevel.getInstance();
 

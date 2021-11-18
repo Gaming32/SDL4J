@@ -34,4 +34,14 @@ public final class TimeModule implements Module {
             }
         }
     }
+
+    @Override
+    public void quit() {
+        SDL2Library lib = LowLevel.getInstance();
+        lib.SDL_LockMutex(timerMutex);
+        // TODO: Event timers
+        lib.SDL_UnlockMutex(timerMutex);
+        lib.SDL_DestroyMutex(timerMutex);
+        timerMutex = null;
+    }
 }
