@@ -10,7 +10,7 @@ package io.github.gaming32.sdl4j.sdl_enums;
  *  <p>The values in this enumeration are based on the USB usage page standard:
  *  https://www.usb.org/sites/default/files/documents/hut1_12v2.pdf</p>
  */
-public class SDL_Scancode {
+public final class SDL_Scancode {
     public static final int
 
     A = 4,

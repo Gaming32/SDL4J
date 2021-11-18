@@ -1,6 +1,6 @@
 package io.github.gaming32.sdl4j.sdl_enums;
 
-public class SDL_KeyCode {
+public final class SDL_KeyCode {
     public static final int
 
     UNKNOWN = 0,

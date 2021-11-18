@@ -1,6 +1,6 @@
 package io.github.gaming32.sdl4j.sdl_enums;
 
-public class SDL_WindowEventID {
+public final class SDL_WindowEventID {
     public static final int
 
     /** Never used */

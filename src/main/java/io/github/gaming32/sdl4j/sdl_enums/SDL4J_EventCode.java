@@ -1,6 +1,6 @@
 package io.github.gaming32.sdl4j.sdl_enums;
 
-public class SDL4J_EventCode {
+public final class SDL4J_EventCode {
     private static final int R = SDL_EventType.USEREVENT;
     public static final int
 
