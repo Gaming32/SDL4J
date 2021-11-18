@@ -2,6 +2,7 @@ package io.github.gaming32.sdl4j;
 
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library;
 import io.github.gaming32.sdl4j.modules.DisplayModule;
+import io.github.gaming32.sdl4j.modules.JoystickModule;
 
 public final class SDL4J {
     public static interface Module {
@@ -16,7 +17,8 @@ public final class SDL4J {
         int i = 0, success = 0, fail = 0;
 
         final Module[] modules = new Module[] {
-            DisplayModule.getInstance()
+            DisplayModule.getInstance(),
+            JoystickModule.getInstance()
         };
 
         wasInit = lib.SDL_Init(SDL2Library.SDL_INIT_TIMER);

@@ -7,4 +7,8 @@ public final class ImportSuccess {
         this.success = success;
         this.fail = fail;
     }
+
+    public String toString() {
+        return "ImportSuccess{success=" + this.success + ", fail=" + this.fail + "}";
+    }
 }

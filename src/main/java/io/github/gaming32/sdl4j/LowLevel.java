@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import com.sun.jna.Callback;
 import com.sun.jna.Library;
+import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
@@ -152,6 +154,9 @@ public final class LowLevel {
         //#endregion
 
         //#region SDL_events.h
+        public static final byte SDL_RELEASED = 0;
+        public static final byte SDL_PRESSED = 1;
+
         /**
          * Fields shared by every event
          */
@@ -777,12 +782,22 @@ public final class LowLevel {
             /** Drag and drop event data */
             SDL_DropEvent drop;
 
+            public int getType() {
+                return (int)getTypedValue(int.class);
+            }
+
             public void setTypeFromID(int type) {
                 setType(getClassFromType(type));
             }
 
             public void setProperType() {
-                setTypeFromID((int)this.getTypedValue(int.class));
+                setTypeFromID(getType());
+            }
+
+            @SuppressWarnings("unchecked")
+            public <T> T getProperValue(Class<T> clazz) {
+                setProperType();
+                return (T)getTypedValue(clazz);
             }
 
             public static Class<? extends SDL_CommonEvent> getClassFromType(int type) {
@@ -850,7 +865,7 @@ public final class LowLevel {
          * @see LowLevel.SDL2Library#SDL_AddEventWatch
          */
         @FunctionalInterface
-        public static interface SDL_EventFilter {
+        public static interface SDL_EventFilter extends Callback {
             public boolean filter(Pointer userdata, SDL_Event event);
         }
 
@@ -895,6 +910,105 @@ public final class LowLevel {
          * @see LowLevel.SDL2Library#SDL_PushEvent
          */
         public void SDL_SetEventFilter(SDL_EventFilter filter, Pointer userdata);
+
+        /**
+         * <p>Run a specific filter function on the current event queue, removing any
+         * events for which the filter returns 0.</p>
+         *
+         * <p>See SDL_SetEventFilter() for more information. Unlike SDL_SetEventFilter(),
+         * this function does not change the filter permanently, it only uses the
+         * supplied filter until this function returns.</p>
+         *
+         * @param filter the SDL_EventFilter function to call when an event happens
+         * @param userdata a pointer that is passed to {@code filter}
+         *
+         * @see LowLevel.SDL2Library#SDL_GetEventFilter
+         * @see LowLevel.SDL2Library#SDL_SetEventFilter
+         */
+        public void SDL_FilterEvents(SDL_EventFilter filter, Pointer userdata);
+
+        /**
+         * <p>Add an event to the event queue.</p>
+         *
+         * <p>The event queue can actually be used as a two way communication channel.
+         * Not only can events be read from the queue, but the user can also push
+         * their own events onto it. {@code event} is a pointer to the event structure you
+         * wish to push onto the queue. The event is copied into the queue, and the
+         * caller may dispose of the memory pointed to after SDL_PushEvent() returns.</p>
+         *
+         * <p>Note: Pushing device input events onto the queue doesn't modify the state
+         * of the device within SDL.</p>
+         *
+         * <p>This function is thread-safe, and can be called from other threads safely.</p>
+         *
+         * <p>Note: Events pushed onto the queue with SDL_PushEvent() get passed through
+         * the event filter but events added with SDL_PeepEvents() do not.</p>
+         *
+         * <p>For pushing application-specific events, please use SDL_RegisterEvents() to
+         * get an event type that does not conflict with other code that also wants
+         * its own custom event types.</p>
+         *
+         * @param event the SDL_Event to be added to the queue
+         * @return 1 on success, 0 if the event was filtered, or a negative error
+         *         code on failure; call SDL_GetError() for more information. A
+         *         common reason for error is the event queue being full.
+         *
+         * @see LowLevel.SDL2Library#SDL_PeepEvents
+         * @see LowLevel.SDL2Library#SDL_PollEvent
+         * @see LowLevel.SDL2Library#SDL_RegisterEvents
+         */
+        public boolean SDL_PushEvent(SDL_Event event);
+
+        public static final int SDL_QUERY = -1;
+        public static final int SDL_IGNORE = 0;
+        public static final int SDL_DISABLE = 0;
+        public static final int SDL_ENABLE = 1;
+
+        /**
+         * <p>Set the state of processing events by type.</p>
+         *
+         * <p>{@code state} may be any of the following:</p>
+         *
+         * <ul>
+         *   <li>{@code SDL_QUERY}: returns the current processing state of the specified event</li>
+         *   <li>{@code SDL_IGNORE} (aka {@code SDL_DISABLE}): the event will automatically be dropped</li>
+         *       from the event queue and will not be filtered
+         *   <li>{@code SDL_ENABLE}: the event will be processed normally</li>
+         * </ul>
+         *
+         * @param type the type of event; see SDL_EventType for details
+         * @param state how to process the event
+         * @return {@code SDL_DISABLE} or {@code SDL_ENABLE}, representing the processing state
+         *          of the event before this function makes any changes to it.
+         *
+         * @see LowLevel.SDL2Library#SDL_GetEventState
+         */
+        public boolean SDL_EventState(int type, int state);
+        //#endregion
+
+        //#region SDL_joystick.h
+        /**
+         * <p>Enable/disable joystick event polling.</p>
+         *
+         * <p>If joystick events are disabled, you must call SDL_JoystickUpdate()
+         * yourself and manually check the state of the joystick when you want
+         * joystick information.</p>
+         *
+         * <p>It is recommended that you leave joystick event handling enabled.</p>
+         *
+         * <p><b>WARNING</b>: Calling this function may delete all events currently in SDL's
+         * event queue.</p>
+         *
+         * @param state can be one of {@code SDL_QUERY}, {@code SDL_IGNORE}, or {@code SDL_ENABLE}
+         * @return 1 if enabled, 0 if disabled, or a negative error code on failure;
+         *         call SDL_GetError() for more information.
+         *
+         *         If {@code state} is {@code SDL_QUERY} then the current state is returned,
+         *         otherwise the new processing state is returned.
+         *
+         * @see LowLevel.SDL2Library#SDL_GameControllerEventState
+         */
+        public int SDL_JoystickEventState(int state);
         //#endregion
 
         //#region SDL_keyboard.h
@@ -948,6 +1062,82 @@ public final class LowLevel {
         public String SDL_getenv(String name);
         public int SDL_setenv(String name, String value, boolean overwrite);
         //#endregion
+
+        //#region SDL_timer.h
+        /**
+         * <p>Function prototype for the timer callback function.</p>
+         *
+         * <p>The callback function is passed the current timer interval and returns
+         * the next timer interval. If the returned value is the same as the one
+         * passed in, the periodic alarm continues, otherwise a new alarm is
+         * scheduled. If the callback returns 0, the periodic alarm is cancelled.</p>
+         */
+        @FunctionalInterface
+        public static interface SDL_TimerCallback extends Callback {
+            public int execute(int interval, Pointer param);
+        }
+
+        /**
+         * <p>Call a callback function at a future time.</p>
+         *
+         * <p>If you use this function, you must pass {@code SDL_INIT_TIMER} to SDL_Init().</p>
+         *
+         * <p>The callback function is passed the current timer interval and the user
+         * supplied parameter from the SDL_AddTimer() call and should return the next
+         * timer interval. If the value returned from the callback is 0, the timer is
+         * canceled.</p>
+         *
+         * <p>The callback is run on a separate thread.</p>
+         *
+         * <p>Timers take into account the amount of time it took to execute the
+         * callback. For example, if the callback took 250 ms to execute and returned
+         * 1000 (ms), the timer would only wait another 750 ms before its next
+         * iteration.</p>
+         *
+         * <p>Timing may be inexact due to OS scheduling. Be sure to note the current
+         * time with SDL_GetTicks() or SDL_GetPerformanceCounter() in case your
+         * callback needs to adjust for variances.</p>
+         *
+         * @param interval the timer delay, in milliseconds, passed to {@code callback}
+         * @param callback the SDL_TimerCallback function to call when the specified
+         *                 {@code interval} elapses
+         * @param param a pointer that is passed to {@code callback}
+         * @return a timer ID or 0 if an error occurs; call SDL_GetError() for more
+         *         information.
+         *
+         * @see LowLevel.SDL2Library#SDL_RemoveTimer
+         */
+        public int SDL_AddTimer(int interval, SDL_TimerCallback callback, Pointer param);
+
+        /**
+         * Remove a timer created with SDL_AddTimer().
+         *
+         * @param id the ID of the timer to remove
+         * @return SDL_TRUE if the timer is removed or SDL_FALSE if the timer wasn't
+         *         found.
+         *
+         * @see LowLevel.SDL2Library#SDL_AddTimer
+         */
+        public boolean SDL_RemoveTimer(int id);
+        //#endregion
+    }
+
+    public static class Util {
+        public static <T extends Structure> T copyStructure(Class<T> type, T struct) {
+            int size = struct.size();
+            Memory mem = new Memory(size);
+            byte[] data = new byte[size];
+            struct.getPointer().read(0, data, 0, size);
+            mem.write(0, data, 0, size);
+            return Structure.newInstance(type, mem);
+        }
+
+        public static <T extends Structure> void copyStructureInPlace(T from, T to) {
+            int size = from.size();
+            byte[] data = new byte[size];
+            from.getPointer().read(0, data, 0, size);
+            to.getPointer().write(0, data, 0, size);
+        }
     }
 
     private static final Throwable FAIL_CAUSE;
