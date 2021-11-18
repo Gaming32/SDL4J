@@ -1024,10 +1024,10 @@ public final class LowLevel {
             "unused"
         })
         public static class SDL_Keysym extends Structure {
-            int scancode;
-            int sym;
-            short mod;
-            int unused;
+            public int scancode;
+            public int sym;
+            public short mod;
+            public int unused;
         }
         //#endregion
 

@@ -1,5 +1,7 @@
 package io.github.gaming32.sdl4j.modules;
 
+import java.nio.charset.StandardCharsets;
+
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.Union;
@@ -8,19 +10,39 @@ import io.github.gaming32.sdl4j.LowLevel;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Event;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_KeyboardEvent;
+import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_TextInputEvent;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_WindowEvent;
 import io.github.gaming32.sdl4j.LowLevel.Util;
 import io.github.gaming32.sdl4j.SDL4J.Module;
 import io.github.gaming32.sdl4j.sdl_enums.SDL4J_EventCode;
 import io.github.gaming32.sdl4j.sdl_enums.SDL_EventType;
+import io.github.gaming32.sdl4j.sdl_enums.SDL_Scancode;
 import io.github.gaming32.sdl4j.sdl_enums.SDL_WindowEventID;
 
 public final class EventModule implements Module {
+    private static final int MAX_SCAN_UNICODE = 15;
+
     private static EventModule INSTANCE = null;
     private boolean isInit;
     private int keyRepeatDelay, keyRepeatInterval;
     private int repeatTimer;
     private SDL_Event repeatEvent, lastKeyDownEvent;
+
+    private final class ScanAndUnicode {
+        int key;
+        String unicode;
+
+        ScanAndUnicode() {
+            this.key = 0;
+            this.unicode = "";
+        }
+
+        ScanAndUnicode(int key, String unicode) {
+            this.key = key;
+            this.unicode = unicode;
+        }
+    }
+    private ScanAndUnicode[] scanUnicode = new ScanAndUnicode[MAX_SCAN_UNICODE];
 
     EventModule() {
         if (INSTANCE != null) {
@@ -94,8 +116,14 @@ public final class EventModule implements Module {
                 lastKeyDownEvent = Union.newInstance(SDL_Event.class);
             }
             Util.copyStructureInPlace(event, lastKeyDownEvent);
+        } else if (event.getType() == SDL_EventType.TEXTINPUT) {
+            if (lastKeyDownEvent != null) {
+                putEventUnicode(lastKeyDownEvent, event.getProperValue(SDL_TextInputEvent.class).text);
+                lastKeyDownEvent = null;
+            }
+        } else if (event.getType() == SDL4J_EventCode.KEYREPEAT) {
+            event.writeField("type", SDL_EventType.KEYDOWN);
         }
-        // TODO: finish this code
 
         return lib.SDL_EventState(event.getType(), SDL2Library.SDL_QUERY);
     }
@@ -128,5 +156,17 @@ public final class EventModule implements Module {
         keyEvent.writeField("repeat", 1);
         lib.SDL_PushEvent(repeatEvent);
         return keyRepeatInterval;
+    }
+
+    private boolean putEventUnicode(SDL_Event event, byte[] uniData) {
+        String uni = new String(uniData, StandardCharsets.UTF_8);
+        SDL_KeyboardEvent keyEvent = event.getProperValue(SDL_KeyboardEvent.class);
+        for (int i = 0; i < MAX_SCAN_UNICODE; i++) {
+            if (scanUnicode[i] == null) {
+                scanUnicode[i] = new ScanAndUnicode(keyEvent.keysym.scancode, uni);
+                return true;
+            }
+        }
+        return false;
     }
 }
