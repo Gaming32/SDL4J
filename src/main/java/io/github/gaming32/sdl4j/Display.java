@@ -1,14 +1,17 @@
 package io.github.gaming32.sdl4j;
 
-import com.sun.jna.Pointer;
 import com.sun.jna.Memory;
+import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Event;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Point;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Rect;
+import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Renderer;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Surface;
+import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Texture;
+import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Window;
 import io.github.gaming32.sdl4j.enums.DisplayFlags;
 import io.github.gaming32.sdl4j.math.Vector2;
 import io.github.gaming32.sdl4j.modules.DisplayModule;
@@ -34,8 +37,8 @@ public final class Display {
     private int fullscreenBackupY;
     private boolean autoResize;
 
-    static Pointer renderer = null;
-    static Pointer texture = null;
+    static SDL_Renderer renderer = null;
+    static SDL_Texture texture = null;
 
     public static void init() {
         DisplayModule.getInstance().init();
@@ -65,7 +68,7 @@ public final class Display {
         SDL2Library lib = LowLevel.getInstance();
         final String DEFAULT_TITAL = "SDL4J";
 
-        Pointer win = SDL4J.getDefaultWindow();
+        SDL_Window win = SDL4J.getDefaultWindow();
         Surface surface = SDL4J.getDefaultWindowSurface();
         SDL_Surface surf = null;
         SDL_Surface newOwnedSurf = null;
@@ -126,7 +129,7 @@ public final class Display {
         return surface;
     }
 
-    private static int getDisplay(Pointer win) {
+    private static int getDisplay(SDL_Window win) {
         SDL2Library lib = LowLevel.getInstance();
         String displayEnv = lib.SDL_getenv("SDL4J_DISPLAY");
         int display = 0;
@@ -162,6 +165,7 @@ public final class Display {
             return false;
         }
 
-        Pointer window = SDL4J.getDefaultWindow();
+        SDL_Window window = SDL4J.getDefaultWindow();
+        return false;
     }
 }

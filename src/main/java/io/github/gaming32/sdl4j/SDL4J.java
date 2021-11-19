@@ -1,8 +1,7 @@
 package io.github.gaming32.sdl4j;
 
-import com.sun.jna.Pointer;
-
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library;
+import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Window;
 import io.github.gaming32.sdl4j.modules.DisplayModule;
 import io.github.gaming32.sdl4j.modules.JoystickModule;
 
@@ -18,7 +17,7 @@ public final class SDL4J {
     }
 
     private static int wasInit = 0;
-    private static Pointer defaultWindow = null;
+    private static SDL_Window defaultWindow = null;
     private static Surface defaultScreen = null;
 
     public static ImportSuccess init() {
@@ -72,7 +71,7 @@ public final class SDL4J {
         }
     }
 
-    static Pointer getDefaultWindow() {
+    static SDL_Window getDefaultWindow() {
         return defaultWindow;
     }
 

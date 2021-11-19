@@ -1,15 +1,14 @@
 package io.github.gaming32.sdl4j.modules;
 
-import com.sun.jna.Pointer;
-
 import io.github.gaming32.sdl4j.LowLevel;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library;
+import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_mutex;
 import io.github.gaming32.sdl4j.SDL4J.Module;
 import io.github.gaming32.sdl4j.SDLException;
 
 public final class TimeModule implements Module {
     private static TimeModule INSTANCE = null;
-    private Pointer timerMutex;
+    private SDL_mutex timerMutex;
 
     TimeModule() {
         if (INSTANCE != null) {

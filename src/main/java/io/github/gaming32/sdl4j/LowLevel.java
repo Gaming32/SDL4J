@@ -1153,6 +1153,9 @@ public final class LowLevel {
         //#endregion
 
         //#region SDL_mutex.h
+        /** The SDL mutex structure, defined in SDL_sysmutex.c */
+        public static final class SDL_mutex extends Structure {}
+
         /**
          * <p>Create a new mutex.</p>
          *
@@ -1171,7 +1174,7 @@ public final class LowLevel {
          * @see LowLevel.SDL2Library#SDL_TryLockMutex
          * @see LowLevel.SDL2Library#SDL_UnlockMutex
          */
-        public Pointer SDL_CreateMutex();
+        public SDL_mutex SDL_CreateMutex();
 
         /**
          * <p>Lock the mutex.</p>
@@ -1187,7 +1190,7 @@ public final class LowLevel {
          * @param mutex the mutex to lock
          * @return 0, or -1 on error.
          */
-        public int SDL_LockMutex(Pointer mutex);
+        public int SDL_LockMutex(SDL_mutex mutex);
 
         /**
          * <p>Unlock the mutex.</p>
@@ -1204,7 +1207,7 @@ public final class LowLevel {
          * @param mutex the mutex to unlock.
          * @return 0, or -1 on error.
          */
-        public int SDL_UnlockMutex(Pointer mutex);
+        public int SDL_UnlockMutex(SDL_mutex mutex);
 
         /**
          * <p>Destroy a mutex created with SDL_CreateMutex().</p>
@@ -1222,7 +1225,7 @@ public final class LowLevel {
          * @see LowLevel.SDL2Library#SDL_TryLockMutex
          * @see LowLevel.SDL2Library#SDL_UnlockMutex
          */
-        public void SDL_DestroyMutex(Pointer mutex);
+        public void SDL_DestroyMutex(SDL_mutex mutex);
         //#endregion
 
         //#region SDL_stdinc.h
@@ -1349,6 +1352,51 @@ public final class LowLevel {
 
         //#region SDL_render.h
         /**
+         * A structure representing rendering state
+         */
+        public static final class SDL_Renderer extends Structure {}
+
+        /**
+         * An efficient driver-specific representation of pixel data
+         */
+        public static final class SDL_Texture extends Structure {}
+
+        /**
+         * The type used to identify a window
+         *
+         * @see LowLevel.SDL2Library#SDL_CreateWindow
+         * @see LowLevel.SDL2Library#SDL_CreateWindowFrom
+         * @see LowLevel.SDL2Library#SDL_DestroyWindow
+         * @see LowLevel.SDL2Library#SDL_FlashWindow
+         * @see LowLevel.SDL2Library#SDL_GetWindowData
+         * @see LowLevel.SDL2Library#SDL_GetWindowFlags
+         * @see LowLevel.SDL2Library#SDL_GetWindowGrab
+         * @see LowLevel.SDL2Library#SDL_GetWindowKeyboardGrab
+         * @see LowLevel.SDL2Library#SDL_GetWindowMouseGrab
+         * @see LowLevel.SDL2Library#SDL_GetWindowPosition
+         * @see LowLevel.SDL2Library#SDL_GetWindowSize
+         * @see LowLevel.SDL2Library#SDL_GetWindowTitle
+         * @see LowLevel.SDL2Library#SDL_HideWindow
+         * @see LowLevel.SDL2Library#SDL_MaximizeWindow
+         * @see LowLevel.SDL2Library#SDL_MinimizeWindow
+         * @see LowLevel.SDL2Library#SDL_RaiseWindow
+         * @see LowLevel.SDL2Library#SDL_RestoreWindow
+         * @see LowLevel.SDL2Library#SDL_SetWindowData
+         * @see LowLevel.SDL2Library#SDL_SetWindowFullscreen
+         * @see LowLevel.SDL2Library#SDL_SetWindowGrab
+         * @see LowLevel.SDL2Library#SDL_SetWindowKeyboardGrab
+         * @see LowLevel.SDL2Library#SDL_SetWindowMouseGrab
+         * @see LowLevel.SDL2Library#SDL_SetWindowIcon
+         * @see LowLevel.SDL2Library#SDL_SetWindowPosition
+         * @see LowLevel.SDL2Library#SDL_SetWindowSize
+         * @see LowLevel.SDL2Library#SDL_SetWindowBordered
+         * @see LowLevel.SDL2Library#SDL_SetWindowResizable
+         * @see LowLevel.SDL2Library#SDL_SetWindowTitle
+         * @see LowLevel.SDL2Library#SDL_ShowWindow
+         */
+        public static final class SDL_Window extends Structure {}
+
+        /**
          * <p>Destroy the specified texture.</p>
          *
          * <p>Passing NULL or an otherwise invalid texture will set the SDL error message
@@ -1359,7 +1407,7 @@ public final class LowLevel {
          * @see LowLevel.SDL2Library#SDL_CreateTexture
          * @see LowLevel.SDL2Library#SDL_CreateTextureFromSurface
          */
-        public void SDL_DestroyTexture(Pointer texture);
+        public void SDL_DestroyTexture(SDL_Texture texture);
 
         /**
          * Destroy the rendering context for a window and free associated textures.
@@ -1368,7 +1416,7 @@ public final class LowLevel {
          *
          * @see LowLevel.SDL2Library#SDL_CreateRenderer
          */
-        public void SDL_DestroyRenderer(Pointer renderer);
+        public void SDL_DestroyRenderer(SDL_Renderer renderer);
         //#endregion
 
         //#region SDL_surface.h
@@ -1545,7 +1593,7 @@ public final class LowLevel {
          * @see LowLevel.SDL2Library#SDL_GetDisplayBounds
          * @see LowLevel.SDL2Library#SDL_GetNumVideoDisplays
          */
-        public int SDL_GetWindowDisplayIndex(Pointer window);
+        public int SDL_GetWindowDisplayIndex(SDL_Window window);
         //#endregion
     }
 
