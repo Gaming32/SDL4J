@@ -13,6 +13,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.Structure.FieldOrder;
 import com.sun.jna.Union;
+import com.sun.jna.ptr.IntByReference;
 
 import io.github.gaming32.sdl4j.sdl_enums.SDL_EventType;
 
@@ -1026,6 +1027,19 @@ public final class LowLevel {
          * @see LowLevel.SDL2Library#SDL_GetEventState
          */
         public boolean SDL_EventState(int type, int state);
+
+        /**
+         * <p>Remove an event watch callback added with SDL_AddEventWatch().</p>
+         *
+         * <p>This function takes the same input as SDL_AddEventWatch() to identify and
+         * delete the corresponding callback.</p>
+         *
+         * @param filter the function originally passed to SDL_AddEventWatch()
+         * @param userdata the pointer originally passed to SDL_AddEventWatch()
+         *
+         * @see LowLevel.SDL2Library#SDL_AddEventWatch
+         */
+        public void SDL_DelEventWatch(SDL_EventFilter filter, Pointer userdata);
         //#endregion
 
         //#region SDL_joystick.h
@@ -1053,6 +1067,37 @@ public final class LowLevel {
         public int SDL_JoystickEventState(int state);
         //#endregion
 
+        //#region SDL_hints.h
+        /**
+         *  <p>A variable controlling the scaling quality</p>
+         *
+         *  <p>This variable can be set to the following values:<br>
+         *    <blockquote>"0" or "nearest" - Nearest pixel sampling</blockquote>
+         *    <blockquote>"1" or "linear"  - Linear filtering (supported by OpenGL and Direct3D)</blockquote>
+         *    <blockquote>"2" or "best"    - Currently this is the same as "linear"</blockquote></p>
+         *
+         *  <p>By default nearest pixel sampling is used</p>
+         */
+        public static final String SDL_HINT_RENDER_SCALE_QUALITY = "SDL_RENDER_SCALE_QUALITY";
+
+        /**
+         * <p>Set a hint with a specific priority.</p>
+         *
+         * <p>The priority controls the behavior when setting a hint that already has a
+         * value. Hints will replace existing hints of their priority and lower.
+         * Environment variables are considered to have override priority.</p>
+         *
+         * @param name the hint to set
+         * @param value the value of the hint variable
+         * @param priority the SDL_HintPriority level for the hint
+         * @return SDL_TRUE if the hint was set, SDL_FALSE otherwise.
+         *
+         * @see LowLevel.SDL2Library#SDL_GetHint
+         * @see LowLevel.SDL2Library#SDL_SetHint
+         */
+        public boolean SDL_SetHintWithPriority(String name, String value, int priority);
+        //#endregion
+
         //#region SDL_keyboard.h
         /**
          * The SDL keysym structure, used in key events.
@@ -1076,6 +1121,35 @@ public final class LowLevel {
         //#region SDL_mouse.h
         public static final int SDL_MOUSEWHEEL_NORMAL = 0;
         public static final int SDL_MOUSEWHEEL_FLIPPED = 1;
+
+        /**
+         * <p>Get the current state of the mouse in relation to the desktop.</p>
+         *
+         * <p>This works similarly to SDL_GetMouseState(), but the coordinates will be
+         * reported relative to the top-left of the desktop. This can be useful if you
+         * need to track the mouse outside of a specific window and SDL_CaptureMouse()
+         * doesn't fit your needs. For example, it could be useful if you need to
+         * track the mouse while dragging a window, where coordinates relative to a
+         * window might not be in sync at all times.</p>
+         *
+         * <p>Note: SDL_GetMouseState() returns the mouse position as SDL understands it
+         * from the last pump of the event queue. This function, however, queries the
+         * OS for the current mouse position, and as such, might be a slightly less
+         * efficient function. Unless you know what you're doing and have a good
+         * reason to use this function, you probably want SDL_GetMouseState() instead.</p>
+         *
+         * @param x filled in with the current X coord relative to the desktop; can be
+         *          NULL
+         * @param y filled in with the current Y coord relative to the desktop; can be
+         *          NULL
+         * @return the current button state as a bitmask which can be tested using
+         *         the SDL_BUTTON(X) macros.
+         *
+         * @since This function is available since SDL 2.0.4.
+         *
+         * @see LowLevel.SDL2Library#SDL_CaptureMouse
+         */
+        public int SDL_GetGlobalMouseState(IntByReference x, IntByReference y);
         //#endregion
 
         //#region SDL_mutex.h
@@ -1268,7 +1342,9 @@ public final class LowLevel {
         /**
          * Returns true if point resides inside a rectangle.
          */
-        public boolean SDL_PointInRect(final SDL_Point p, final SDL_Rect r);
+        default public boolean SDL_PointInRect(final SDL_Point p, final SDL_Rect r) {
+            return p.x >= r.x && p.x < r.x + r.w && p.y >= r.y && p.y < r.y + r.h;
+        }
         //#endregion
 
         //#region SDL_render.h

@@ -1,19 +1,24 @@
 package io.github.gaming32.sdl4j;
 
 import com.sun.jna.Pointer;
+import com.sun.jna.Memory;
 import com.sun.jna.ptr.IntByReference;
 
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library;
+import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Event;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Point;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Rect;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Surface;
 import io.github.gaming32.sdl4j.enums.DisplayFlags;
 import io.github.gaming32.sdl4j.math.Vector2;
 import io.github.gaming32.sdl4j.modules.DisplayModule;
+import io.github.gaming32.sdl4j.sdl_enums.SDL_EventType;
+import io.github.gaming32.sdl4j.sdl_enums.SDL_HintPriority;
 
 public final class Display {
     private Display() {}
     private static final Display STATE = new Display();
+    private static final Pointer MARKER = new Memory(1);
 
     private String title;
     private Object icon;
@@ -75,6 +80,13 @@ public final class Display {
 
         scaleEnv = lib.SDL_getenv("SDL4J_FORCE_SCALE");
         if (scaleEnv != null) {
+            flags |= DisplayFlags.SCALED;
+            if (scaleEnv.equals("photo")) {
+                lib.SDL_SetHintWithPriority(SDL2Library.SDL_HINT_RENDER_SCALE_QUALITY, "best", SDL_HintPriority.OVERRIDE);
+            }
+        }
+
+        if (size != null) {
             w = (int)size.x;
             h = (int)size.y;
             if (w < 0 || h < 0) {
@@ -109,6 +121,8 @@ public final class Display {
             renderer = null;
         }
 
+        lib.SDL_DelEventWatch(Display::resizeEventWatch, MARKER);
+
         return surface;
     }
 
@@ -126,6 +140,7 @@ public final class Display {
             SDL_Point mousePosition = new SDL_Point();
             IntByReference mouseX = new IntByReference();
             IntByReference mouseY = new IntByReference();
+            lib.SDL_GetGlobalMouseState(mouseX, mouseY);
             mousePosition.writeField("x", mouseX.getValue());
             mousePosition.writeField("y", mouseY.getValue());
             int numDisplays = lib.SDL_GetNumVideoDisplays();
@@ -140,5 +155,13 @@ public final class Display {
             }
         }
         return display;
+    }
+
+    protected static boolean resizeEventWatch(Pointer userdata, SDL_Event event) {
+        if (event.getType() != SDL_EventType.WINDOWEVENT) {
+            return false;
+        }
+
+        Pointer window = SDL4J.getDefaultWindow();
     }
 }
