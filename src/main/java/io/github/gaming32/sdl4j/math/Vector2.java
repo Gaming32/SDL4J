@@ -3,7 +3,7 @@ package io.github.gaming32.sdl4j.math;
 import java.util.Arrays;
 
 public class Vector2 extends Vector {
-    public static final Vector IDENTITY = new Vector2();
+    public static final Vector2 IDENTITY = new Vector2();
 
     public final double x, y;
 

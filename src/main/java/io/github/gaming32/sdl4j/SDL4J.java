@@ -1,5 +1,7 @@
 package io.github.gaming32.sdl4j;
 
+import com.sun.jna.Pointer;
+
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library;
 import io.github.gaming32.sdl4j.modules.DisplayModule;
 import io.github.gaming32.sdl4j.modules.JoystickModule;
@@ -15,11 +17,13 @@ public final class SDL4J {
         Runtime.getRuntime().addShutdownHook(new Thread(SDL4J::shutdownQuit));
     }
 
-    private static int wasInit;
+    private static int wasInit = 0;
+    private static Pointer defaultWindow = null;
+    private static Surface defaultScreen = null;
 
     public static ImportSuccess init() {
         SDL2Library lib = LowLevel.getInstance();
-        int i = 0, success = 0, fail = 0;
+        int success = 0, fail = 0;
 
         final Module[] modules = new Module[] {
             DisplayModule.getInstance(),
@@ -28,7 +32,7 @@ public final class SDL4J {
 
         wasInit = lib.SDL_Init(SDL2Library.SDL_INIT_TIMER);
 
-        for (i = 0; i < modules.length; i++) {
+        for (int i = 0; i < modules.length; i++) {
             try {
                 modules[i].init();
                 success++;
@@ -46,8 +50,6 @@ public final class SDL4J {
     }
 
     private static void quit0() {
-        int num, i;
-
         final Module[] modules = new Module[] {
             JoystickModule.getInstance(),
             DisplayModule.getInstance()
@@ -55,7 +57,7 @@ public final class SDL4J {
 
         // TODO: Implement quit handlers
 
-        for (i = 0; i < modules.length; i++) {
+        for (int i = 0; i < modules.length; i++) {
             modules[i].quit();
         }
 
@@ -68,5 +70,13 @@ public final class SDL4J {
             wasInit = 0;
             lib.SDL_Quit();
         }
+    }
+
+    static Pointer getDefaultWindow() {
+        return defaultWindow;
+    }
+
+    static Surface getDefaultWindowSurface() {
+        return defaultScreen;
     }
 }

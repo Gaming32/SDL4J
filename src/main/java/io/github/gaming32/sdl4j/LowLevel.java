@@ -1156,6 +1156,223 @@ public final class LowLevel {
         public int SDL_setenv(String name, String value, boolean overwrite);
         //#endregion
 
+        //#region SDL_pixels.h
+        @FieldOrder({
+            "r",
+            "g",
+            "b",
+            "a"
+        })
+        public static class SDL_Color extends Structure {
+            public byte r;
+            public byte g;
+            public byte b;
+            public byte a;
+        }
+
+        @FieldOrder({
+            "ncolors",
+            "colors",
+            "version",
+            "refcount"
+        })
+        public static class SDL_Palette extends Structure {
+            public int ncolors;
+            public SDL_Color.ByReference colors;
+            public int version;
+            public int refcount;
+        }
+
+        /**
+         * @apiNote Everything in the pixel format structure is read-only.
+         */
+        @FieldOrder({
+            "format",
+            "palette",
+            "BitsPerPixel",
+            "BytesPerPixel",
+            "padding",
+            "Rmask",
+            "Gmask",
+            "Bmask",
+            "Amask",
+            "Rloss",
+            "Gloss",
+            "Bloss",
+            "Aloss",
+            "Rshift",
+            "Gshift",
+            "Bshift",
+            "Ashift",
+            "refcount",
+            "next"
+        })
+        public static class SDL_PixelFormat extends Structure {
+            public int format;
+            public SDL_Palette.ByReference palette;
+            public byte BitsPerPixel;
+            public byte BytesPerPixel;
+            public byte[] padding = new byte[2];
+            public int Rmask;
+            public int Gmask;
+            public int Bmask;
+            public int Amask;
+            public byte Rloss;
+            public byte Gloss;
+            public byte Bloss;
+            public byte Aloss;
+            public byte Rshift;
+            public byte Gshift;
+            public byte Bshift;
+            public byte Ashift;
+            public int refcount;
+            public SDL_PixelFormat.ByReference next;
+        }
+        //#endregion
+
+        //#region SDL_rect.h
+        /**
+         * The structure that defines a point (integer)
+         *
+         * @see LowLevel.SDL2Library#SDL_EnclosePoints
+         * @see LowLevel.SDL2Library#SDL_PointInRect
+         */
+        @FieldOrder({
+            "x",
+            "y"
+        })
+        public static class SDL_Point extends Structure {
+            public int x;
+            public int y;
+        }
+
+        /**
+         * A rectangle, with the origin at the upper left (integer).
+         *
+         * @see LowLevel.SDL2Library#SDL_RectEmpty
+         * @see LowLevel.SDL2Library#SDL_RectEquals
+         * @see LowLevel.SDL2Library#SDL_HasIntersection
+         * @see LowLevel.SDL2Library#SDL_IntersectRect
+         * @see LowLevel.SDL2Library#SDL_UnionRect
+         * @see LowLevel.SDL2Library#SDL_EnclosePoints
+         */
+        @FieldOrder({
+            "x", "y",
+            "w", "h"
+        })
+        public static class SDL_Rect extends Structure {
+            public int x, y;
+            public int w, h;
+        }
+
+        /**
+         * Returns true if point resides inside a rectangle.
+         */
+        public boolean SDL_PointInRect(final SDL_Point p, final SDL_Rect r);
+        //#endregion
+
+        //#region SDL_render.h
+        /**
+         * <p>Destroy the specified texture.</p>
+         *
+         * <p>Passing NULL or an otherwise invalid texture will set the SDL error message
+         * to "Invalid texture".</p>
+         *
+         * @param texture the texture to destroy
+         *
+         * @see LowLevel.SDL2Library#SDL_CreateTexture
+         * @see LowLevel.SDL2Library#SDL_CreateTextureFromSurface
+         */
+        public void SDL_DestroyTexture(Pointer texture);
+
+        /**
+         * Destroy the rendering context for a window and free associated textures.
+         *
+         * @param renderer the rendering context
+         *
+         * @see LowLevel.SDL2Library#SDL_CreateRenderer
+         */
+        public void SDL_DestroyRenderer(Pointer renderer);
+        //#endregion
+
+        //#region SDL_surface.h
+        /**
+         * A collection of pixels used in software blitting.
+         *
+         * @apiNote This structure should be treated as read-only, except for {@code pixels},
+         *          which, if not NULL, contains the raw pixel data for the surface.
+         */
+        @FieldOrder({
+            "flags",
+            "format",
+            "w", "h",
+            "pitch",
+            "pixels",
+            "userdata",
+            "locked",
+            "list_blitmap",
+            "clip_rect",
+            "map",
+            "refcount"
+        })
+        public static class SDL_Surface extends Structure {
+            /** Read-only */
+            public int flags;
+            /** Read-only */
+            public SDL_PixelFormat.ByReference format;
+            /** Read-only */
+            public int w, h;
+            /** Read-only */
+            public int pitch;
+            /** Read-write */
+            public Pointer pixels;
+
+            /**
+             * <p>Application data associated with the surface</p>
+             *
+             * <p>Read-write</p>
+             */
+            public Pointer userdata;
+
+            /**
+             * <p>information needed for surfaces requiring locks</p>
+             *
+             * <p>Read-only</p>
+             */
+            public int locked;
+
+            /**
+             * <p>list of BlitMap that hold a reference to this surface</p>
+             *
+             * <p>Private</p>
+             */
+            @SuppressWarnings("unused")
+            private Pointer list_blitmap;
+
+            /**
+             * <p>clipping information</p>
+             *
+             * <p>Read-only</p>
+             */
+            public SDL_Rect clip_rect;
+
+            /**
+             * <p>info for fast blit mapping to other surfaces</p>
+             *
+             * <p>Private</p>
+             */
+            @SuppressWarnings("unused")
+            private Pointer map;
+
+            /**
+             * <p>Reference count -- used when freeing surface</p>
+             *
+             * <p>Read-mostly</p>
+             */
+            public int refcount;
+        }
+        //#endregion
+
         //#region SDL_timer.h
         /**
          * <p>Function prototype for the timer callback function.</p>
@@ -1212,6 +1429,47 @@ public final class LowLevel {
          * @see LowLevel.SDL2Library#SDL_AddTimer
          */
         public boolean SDL_RemoveTimer(int id);
+        //#endregion
+
+        //#region SDL_video.h
+        /**
+         * <p>Get the desktop area represented by a display.</p>
+         *
+         * <p>The primary display ({@code displayIndex} zero) is always located at 0,0.</p>
+         *
+         * @param displayIndex the index of the display to query
+         * @param rect the SDL_Rect structure filled in with the display bounds
+         * @return 0 on success or a negative error code on failure; call
+         *         SDL_GetError() for more information.
+         *
+         * @see LowLevel.SDL2Library#SDL_GetNumVideoDisplays
+         */
+        public int SDL_GetDisplayBounds(int displayIndex, SDL_Rect rect);
+
+        /**
+         * Get the number of available video displays.
+         *
+         * @return a number >= 1 or a negative error code on failure; call
+         *         SDL_GetError() for more information.
+         *
+         * @since This function is available since SDL 2.0.0.
+         *
+         * @see LowLevel.SDL2Library#SDL_GetDisplayBounds
+         */
+        public int SDL_GetNumVideoDisplays();
+
+        /**
+         * Get the index of the display associated with a window.
+         *
+         * @param window the window to query
+         * @return the index of the display containing the center of the window on
+         *         success or a negative error code on failure; call SDL_GetError()
+         *         for more information.
+         *
+         * @see LowLevel.SDL2Library#SDL_GetDisplayBounds
+         * @see LowLevel.SDL2Library#SDL_GetNumVideoDisplays
+         */
+        public int SDL_GetWindowDisplayIndex(Pointer window);
         //#endregion
     }
 
