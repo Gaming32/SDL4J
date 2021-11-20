@@ -84,10 +84,10 @@ public final class LowLevel {
          * @return 0 on success or a negative error code on failure; call
          *          SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_InitSubSystem
-         * @see LowLevel.SDL2Library#SDL_Quit
-         * @see LowLevel.SDL2Library#SDL_SetMainReady
-         * @see LowLevel.SDL2Library#SDL_WasInit
+         * @see #SDL_InitSubSystem
+         * @see #SDL_Quit
+         * @see #SDL_SetMainReady
+         * @see #SDL_WasInit
          */
         public int SDL_Init(int flags);
 
@@ -100,8 +100,8 @@ public final class LowLevel {
          *
          *         <p>The return value does not include SDL_INIT_NOPARACHUTE.</p>
          *
-         * @see LowLevel.SDL2Library#SDL_Init
-         * @see LowLevel.SDL2Library#SDL_InitSubSystem
+         * @see #SDL_Init
+         * @see #SDL_InitSubSystem
          */
         public int SDL_WasInit(int flags);
 
@@ -114,9 +114,9 @@ public final class LowLevel {
          * @return 0 on success or a negative error code on failure; call
          *         SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_Init
-         * @see LowLevel.SDL2Library#SDL_Quit
-         * @see LowLevel.SDL2Library#SDL_QuitSubSystem
+         * @see #SDL_Init
+         * @see #SDL_Quit
+         * @see #SDL_QuitSubSystem
          */
         public int SDL_InitSubSystem(int flags);
 
@@ -135,8 +135,8 @@ public final class LowLevel {
          *
          * @param flags any of the flags used by SDL_Init(); see SDL_Init for details.
          *
-         * @see LowLevel.SDL2Library#SDL_InitSubSystem
-         * @see LowLevel.SDL2Library#SDL_Quit
+         * @see #SDL_InitSubSystem
+         * @see #SDL_Quit
          */
         public void SDL_QuitSubSystem(int flags);
 
@@ -157,8 +157,8 @@ public final class LowLevel {
          * application is shutdown, but it is not wise to do this from a library or
          * other dynamically loaded code.</p>
          *
-         * @see LowLevel.SDL2Library#SDL_Init
-         * @see LowLevel.SDL2Library#SDL_QuitSubSystem
+         * @see #SDL_Init
+         * @see #SDL_QuitSubSystem
          */
         public void SDL_Quit();
         //#endregion
@@ -194,8 +194,8 @@ public final class LowLevel {
          *         return values of SDL function calls to determine when to
          *         appropriately call SDL_GetError().
          *
-         * @see LowLevel.SDL2Library#SDL_ClearError()
-         * @see LowLevel.SDL2Library#SDL_SetError(String, Object...)
+         * @see #SDL_ClearError()
+         * @see #SDL_SetError(String, Object...)
          */
         public String SDL_GetError();
         //#endregion
@@ -908,8 +908,8 @@ public final class LowLevel {
          * polling or waiting for events (e.g. you are filtering them), then you must
          * call SDL_PumpEvents() to force an event queue update.</p>
          *
-         * @see LowLevel.SDL2Library#SDL_PollEvent
-         * @see LowLevel.SDL2Library#SDL_WaitEvent
+         * @see #SDL_PollEvent
+         * @see #SDL_WaitEvent
          */
         public void SDL_PumpEvents();
 
@@ -922,8 +922,8 @@ public final class LowLevel {
          * @return 1 to permit event to be added to the queue, and 0 to disallow
          *         it. When used with SDL_AddEventWatch, the return value is ignored.
          *
-         * @see LowLevel.SDL2Library#SDL_SetEventFilter
-         * @see LowLevel.SDL2Library#SDL_AddEventWatch
+         * @see #SDL_SetEventFilter
+         * @see #SDL_AddEventWatch
          */
         @FunctionalInterface
         public static interface SDL_EventFilter extends Callback {
@@ -964,11 +964,11 @@ public final class LowLevel {
          * @param filter An SDL_EventFilter function to call when an event happens
          * @param userdata a pointer that is passed to {@code filter}
          *
-         * @see LowLevel.SDL2Library#SDL_AddEventWatch
-         * @see LowLevel.SDL2Library#SDL_EventState
-         * @see LowLevel.SDL2Library#SDL_GetEventFilter
-         * @see LowLevel.SDL2Library#SDL_PeepEvents
-         * @see LowLevel.SDL2Library#SDL_PushEvent
+         * @see #SDL_AddEventWatch
+         * @see #SDL_EventState
+         * @see #SDL_GetEventFilter
+         * @see #SDL_PeepEvents
+         * @see #SDL_PushEvent
          */
         public void SDL_SetEventFilter(SDL_EventFilter filter, Pointer userdata);
 
@@ -983,8 +983,8 @@ public final class LowLevel {
          * @param filter the SDL_EventFilter function to call when an event happens
          * @param userdata a pointer that is passed to {@code filter}
          *
-         * @see LowLevel.SDL2Library#SDL_GetEventFilter
-         * @see LowLevel.SDL2Library#SDL_SetEventFilter
+         * @see #SDL_GetEventFilter
+         * @see #SDL_SetEventFilter
          */
         public void SDL_FilterEvents(SDL_EventFilter filter, Pointer userdata);
 
@@ -1014,9 +1014,9 @@ public final class LowLevel {
          *         code on failure; call SDL_GetError() for more information. A
          *         common reason for error is the event queue being full.
          *
-         * @see LowLevel.SDL2Library#SDL_PeepEvents
-         * @see LowLevel.SDL2Library#SDL_PollEvent
-         * @see LowLevel.SDL2Library#SDL_RegisterEvents
+         * @see #SDL_PeepEvents
+         * @see #SDL_PollEvent
+         * @see #SDL_RegisterEvents
          */
         public boolean SDL_PushEvent(SDL_Event event);
 
@@ -1042,7 +1042,7 @@ public final class LowLevel {
          * @return {@code SDL_DISABLE} or {@code SDL_ENABLE}, representing the processing state
          *          of the event before this function makes any changes to it.
          *
-         * @see LowLevel.SDL2Library#SDL_GetEventState
+         * @see #SDL_GetEventState
          */
         public boolean SDL_EventState(int type, int state);
 
@@ -1067,8 +1067,8 @@ public final class LowLevel {
          * @param filter an SDL_EventFilter function to call when an event happens.
          * @param userdata a pointer that is passed to {@code filter}
          *
-         * @see LowLevel.SDL2Library#SDL_DelEventWatch
-         * @see LowLevel.SDL2Library#SDL_SetEventFilter
+         * @see #SDL_DelEventWatch
+         * @see #SDL_SetEventFilter
          */
         public void SDL_AddEventWatch(SDL_EventFilter filter, Pointer userdata);
 
@@ -1081,7 +1081,7 @@ public final class LowLevel {
          * @param filter the function originally passed to SDL_AddEventWatch()
          * @param userdata the pointer originally passed to SDL_AddEventWatch()
          *
-         * @see LowLevel.SDL2Library#SDL_AddEventWatch
+         * @see #SDL_AddEventWatch
          */
         public void SDL_DelEventWatch(SDL_EventFilter filter, Pointer userdata);
         //#endregion
@@ -1106,7 +1106,7 @@ public final class LowLevel {
          *         If {@code state} is {@code SDL_QUERY} then the current state is returned,
          *         otherwise the new processing state is returned.
          *
-         * @see LowLevel.SDL2Library#SDL_GameControllerEventState
+         * @see #SDL_GameControllerEventState
          */
         public int SDL_JoystickEventState(int state);
         //#endregion
@@ -1136,8 +1136,8 @@ public final class LowLevel {
          * @param priority the SDL_HintPriority level for the hint
          * @return SDL_TRUE if the hint was set, SDL_FALSE otherwise.
          *
-         * @see LowLevel.SDL2Library#SDL_GetHint
-         * @see LowLevel.SDL2Library#SDL_SetHint
+         * @see #SDL_GetHint
+         * @see #SDL_SetHint
          */
         public boolean SDL_SetHintWithPriority(String name, String value, int priority);
 
@@ -1151,8 +1151,8 @@ public final class LowLevel {
          *
          * @since This function is available since SDL 2.0.5.
          *
-         * @see LowLevel.SDL2Library#SDL_GetHint
-         * @see LowLevel.SDL2Library#SDL_SetHint
+         * @see #SDL_GetHint
+         * @see #SDL_SetHint
          */
         public boolean SDL_GetHintBoolean(String name, boolean defaultValue);
         //#endregion
@@ -1206,7 +1206,7 @@ public final class LowLevel {
          *
          * @since This function is available since SDL 2.0.4.
          *
-         * @see LowLevel.SDL2Library#SDL_CaptureMouse
+         * @see #SDL_CaptureMouse
          */
         public int SDL_GetGlobalMouseState(IntByReference x, IntByReference y);
         //#endregion
@@ -1228,10 +1228,10 @@ public final class LowLevel {
          * @return the initialized and unlocked mutex or NULL on failure; call
          *         SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_DestroyMutex
-         * @see LowLevel.SDL2Library#SDL_LockMutex
-         * @see LowLevel.SDL2Library#SDL_TryLockMutex
-         * @see LowLevel.SDL2Library#SDL_UnlockMutex
+         * @see #SDL_DestroyMutex
+         * @see #SDL_LockMutex
+         * @see #SDL_TryLockMutex
+         * @see #SDL_UnlockMutex
          */
         public SDL_mutex SDL_CreateMutex();
 
@@ -1279,10 +1279,10 @@ public final class LowLevel {
          *
          * @param mutex the mutex to destroy
          *
-         * @see LowLevel.SDL2Library#SDL_CreateMutex
-         * @see LowLevel.SDL2Library#SDL_LockMutex
-         * @see LowLevel.SDL2Library#SDL_TryLockMutex
-         * @see LowLevel.SDL2Library#SDL_UnlockMutex
+         * @see #SDL_CreateMutex
+         * @see #SDL_LockMutex
+         * @see #SDL_TryLockMutex
+         * @see #SDL_UnlockMutex
          */
         public void SDL_DestroyMutex(SDL_mutex mutex);
         //#endregion
@@ -1409,8 +1409,8 @@ public final class LowLevel {
         /**
          * The structure that defines a point (integer)
          *
-         * @see LowLevel.SDL2Library#SDL_EnclosePoints
-         * @see LowLevel.SDL2Library#SDL_PointInRect
+         * @see #SDL_EnclosePoints
+         * @see #SDL_PointInRect
          */
         @FieldOrder({
             "x",
@@ -1424,12 +1424,12 @@ public final class LowLevel {
         /**
          * A rectangle, with the origin at the upper left (integer).
          *
-         * @see LowLevel.SDL2Library#SDL_RectEmpty
-         * @see LowLevel.SDL2Library#SDL_RectEquals
-         * @see LowLevel.SDL2Library#SDL_HasIntersection
-         * @see LowLevel.SDL2Library#SDL_IntersectRect
-         * @see LowLevel.SDL2Library#SDL_UnionRect
-         * @see LowLevel.SDL2Library#SDL_EnclosePoints
+         * @see #SDL_RectEmpty
+         * @see #SDL_RectEquals
+         * @see #SDL_HasIntersection
+         * @see #SDL_IntersectRect
+         * @see #SDL_UnionRect
+         * @see #SDL_EnclosePoints
          */
         @FieldOrder({
             "x", "y",
@@ -1469,10 +1469,10 @@ public final class LowLevel {
          * @return a valid rendering context or NULL if there was an error; call
          *         SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_CreateSoftwareRenderer
-         * @see LowLevel.SDL2Library#SDL_DestroyRenderer
-         * @see LowLevel.SDL2Library#SDL_GetNumRenderDrivers
-         * @see LowLevel.SDL2Library#SDL_GetRendererInfo
+         * @see #SDL_CreateSoftwareRenderer
+         * @see #SDL_DestroyRenderer
+         * @see #SDL_GetNumRenderDrivers
+         * @see #SDL_GetRendererInfo
          */
         public SDL_Renderer SDL_CreateRenderer(SDL_Window window, int index, int flags);
 
@@ -1491,10 +1491,10 @@ public final class LowLevel {
          *         was active, the format was unsupported, or the width or height
          *         were out of range; call SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_CreateTextureFromSurface
-         * @see LowLevel.SDL2Library#SDL_DestroyTexture
-         * @see LowLevel.SDL2Library#SDL_QueryTexture
-         * @see LowLevel.SDL2Library#SDL_UpdateTexture
+         * @see #SDL_CreateTextureFromSurface
+         * @see #SDL_DestroyTexture
+         * @see #SDL_QueryTexture
+         * @see #SDL_UpdateTexture
          */
         public SDL_Texture SDL_CreateTexture(SDL_Renderer renderer, int format, int access, int w, int h);
 
@@ -1506,8 +1506,8 @@ public final class LowLevel {
          *
          * @param texture the texture to destroy
          *
-         * @see LowLevel.SDL2Library#SDL_CreateTexture
-         * @see LowLevel.SDL2Library#SDL_CreateTextureFromSurface
+         * @see #SDL_CreateTexture
+         * @see #SDL_CreateTextureFromSurface
          */
         public void SDL_DestroyTexture(SDL_Texture texture);
 
@@ -1516,7 +1516,7 @@ public final class LowLevel {
          *
          * @param renderer the rendering context
          *
-         * @see LowLevel.SDL2Library#SDL_CreateRenderer
+         * @see #SDL_CreateRenderer
          */
         public void SDL_DestroyRenderer(SDL_Renderer renderer);
 
@@ -1544,7 +1544,7 @@ public final class LowLevel {
          *
          * @since This function is available since SDL 2.0.0.
          *
-         * @see LowLevel.SDL2Library#SDL_RenderGetLogicalSize
+         * @see #SDL_RenderGetLogicalSize
          */
         public int SDL_RenderSetLogicalSize(SDL_Renderer renderer, int w, int h);
 
@@ -1562,8 +1562,8 @@ public final class LowLevel {
          *
          * @since This function is available since SDL 2.0.5.
          *
-         * @see LowLevel.SDL2Library#SDL_RenderGetIntegerScale
-         * @see LowLevel.SDL2Library#SDL_RenderSetLogicalSize
+         * @see #SDL_RenderGetIntegerScale
+         * @see #SDL_RenderSetLogicalSize
          */
         public int SDL_RenderSetIntegerScale(SDL_Renderer renderer, boolean enable);
         //#endregion
@@ -1684,9 +1684,9 @@ public final class LowLevel {
          * @return the new SDL_Surface structure that is created or NULL if it fails;
          *         call SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_CreateRGBSurfaceFrom
-         * @see LowLevel.SDL2Library#SDL_CreateRGBSurfaceWithFormat
-         * @see LowLevel.SDL2Library#SDL_FreeSurface
+         * @see #SDL_CreateRGBSurfaceFrom
+         * @see #SDL_CreateRGBSurfaceWithFormat
+         * @see #SDL_FreeSurface
          */
         public SDL_Surface SDL_CreateRGBSurface(int flags, int width, int height, int depth, int Rmask, int Gmask, int Bmask, int Amask);
 
@@ -1697,10 +1697,10 @@ public final class LowLevel {
          *
          * @param surface the SDL_Surface to free.
          *
-         * @see LowLevel.SDL2Library#SDL_CreateRGBSurface
-         * @see LowLevel.SDL2Library#SDL_CreateRGBSurfaceFrom
-         * @see LowLevel.SDL2Library#SDL_LoadBMP
-         * @see LowLevel.SDL2Library#SDL_LoadBMP_RW
+         * @see #SDL_CreateRGBSurface
+         * @see #SDL_CreateRGBSurfaceFrom
+         * @see #SDL_LoadBMP
+         * @see #SDL_LoadBMP_RW
          */
         public void SDL_FreeSurface(SDL_Surface surface);
         //#endregion
@@ -1747,7 +1747,7 @@ public final class LowLevel {
          * @return a timer ID or 0 if an error occurs; call SDL_GetError() for more
          *         information.
          *
-         * @see LowLevel.SDL2Library#SDL_RemoveTimer
+         * @see #SDL_RemoveTimer
          */
         public int SDL_AddTimer(int interval, SDL_TimerCallback callback, Pointer param);
 
@@ -1758,7 +1758,7 @@ public final class LowLevel {
          * @return SDL_TRUE if the timer is removed or SDL_FALSE if the timer wasn't
          *         found.
          *
-         * @see LowLevel.SDL2Library#SDL_AddTimer
+         * @see #SDL_AddTimer
          */
         public boolean SDL_RemoveTimer(int id);
         //#endregion
@@ -1767,35 +1767,35 @@ public final class LowLevel {
         /**
          * The type used to identify a window
          *
-         * @see LowLevel.SDL2Library#SDL_CreateWindow
-         * @see LowLevel.SDL2Library#SDL_CreateWindowFrom
-         * @see LowLevel.SDL2Library#SDL_DestroyWindow
-         * @see LowLevel.SDL2Library#SDL_FlashWindow
-         * @see LowLevel.SDL2Library#SDL_GetWindowData
-         * @see LowLevel.SDL2Library#SDL_GetWindowFlags
-         * @see LowLevel.SDL2Library#SDL_GetWindowGrab
-         * @see LowLevel.SDL2Library#SDL_GetWindowKeyboardGrab
-         * @see LowLevel.SDL2Library#SDL_GetWindowMouseGrab
-         * @see LowLevel.SDL2Library#SDL_GetWindowPosition
-         * @see LowLevel.SDL2Library#SDL_GetWindowSize
-         * @see LowLevel.SDL2Library#SDL_GetWindowTitle
-         * @see LowLevel.SDL2Library#SDL_HideWindow
-         * @see LowLevel.SDL2Library#SDL_MaximizeWindow
-         * @see LowLevel.SDL2Library#SDL_MinimizeWindow
-         * @see LowLevel.SDL2Library#SDL_RaiseWindow
-         * @see LowLevel.SDL2Library#SDL_RestoreWindow
-         * @see LowLevel.SDL2Library#SDL_SetWindowData
-         * @see LowLevel.SDL2Library#SDL_SetWindowFullscreen
-         * @see LowLevel.SDL2Library#SDL_SetWindowGrab
-         * @see LowLevel.SDL2Library#SDL_SetWindowKeyboardGrab
-         * @see LowLevel.SDL2Library#SDL_SetWindowMouseGrab
-         * @see LowLevel.SDL2Library#SDL_SetWindowIcon
-         * @see LowLevel.SDL2Library#SDL_SetWindowPosition
-         * @see LowLevel.SDL2Library#SDL_SetWindowSize
-         * @see LowLevel.SDL2Library#SDL_SetWindowBordered
-         * @see LowLevel.SDL2Library#SDL_SetWindowResizable
-         * @see LowLevel.SDL2Library#SDL_SetWindowTitle
-         * @see LowLevel.SDL2Library#SDL_ShowWindow
+         * @see #SDL_CreateWindow
+         * @see #SDL_CreateWindowFrom
+         * @see #SDL_DestroyWindow
+         * @see #SDL_FlashWindow
+         * @see #SDL_GetWindowData
+         * @see #SDL_GetWindowFlags
+         * @see #SDL_GetWindowGrab
+         * @see #SDL_GetWindowKeyboardGrab
+         * @see #SDL_GetWindowMouseGrab
+         * @see #SDL_GetWindowPosition
+         * @see #SDL_GetWindowSize
+         * @see #SDL_GetWindowTitle
+         * @see #SDL_HideWindow
+         * @see #SDL_MaximizeWindow
+         * @see #SDL_MinimizeWindow
+         * @see #SDL_RaiseWindow
+         * @see #SDL_RestoreWindow
+         * @see #SDL_SetWindowData
+         * @see #SDL_SetWindowFullscreen
+         * @see #SDL_SetWindowGrab
+         * @see #SDL_SetWindowKeyboardGrab
+         * @see #SDL_SetWindowMouseGrab
+         * @see #SDL_SetWindowIcon
+         * @see #SDL_SetWindowPosition
+         * @see #SDL_SetWindowSize
+         * @see #SDL_SetWindowBordered
+         * @see #SDL_SetWindowResizable
+         * @see #SDL_SetWindowTitle
+         * @see #SDL_ShowWindow
          */
         public static final class SDL_Window extends PointerType {}
 
@@ -1845,7 +1845,7 @@ public final class LowLevel {
          * @return 0 on success or a negative error code on failure; call
          *         SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_GetNumVideoDisplays
+         * @see #SDL_GetNumVideoDisplays
          */
         public int SDL_GetDisplayBounds(int displayIndex, SDL_Rect rect);
 
@@ -1875,8 +1875,8 @@ public final class LowLevel {
          *
          * @since This function is available since SDL 2.0.5.
          *
-         * @see LowLevel.SDL2Library#SDL_GetDisplayBounds
-         * @see LowLevel.SDL2Library#SDL_GetNumVideoDisplays
+         * @see #SDL_GetDisplayBounds
+         * @see #SDL_GetNumVideoDisplays
          */
         public int SDL_GetDisplayUsableBounds(int displayIndex, SDL_Rect rect);
 
@@ -1888,7 +1888,7 @@ public final class LowLevel {
          *
          * @since This function is available since SDL 2.0.0.
          *
-         * @see LowLevel.SDL2Library#SDL_GetDisplayBounds
+         * @see #SDL_GetDisplayBounds
          */
         public int SDL_GetNumVideoDisplays();
 
@@ -1900,8 +1900,8 @@ public final class LowLevel {
          *         success or a negative error code on failure; call SDL_GetError()
          *         for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_GetDisplayBounds
-         * @see LowLevel.SDL2Library#SDL_GetNumVideoDisplays
+         * @see #SDL_GetDisplayBounds
+         * @see #SDL_GetNumVideoDisplays
          */
         public int SDL_GetWindowDisplayIndex(SDL_Window window);
 
@@ -1972,8 +1972,8 @@ public final class LowLevel {
          *
          * @since This function is available since SDL 2.0.0.
          *
-         * @see LowLevel.SDL2Library#SDL_CreateWindowFrom
-         * @see LowLevel.SDL2Library#SDL_DestroyWindow
+         * @see #SDL_CreateWindowFrom
+         * @see #SDL_DestroyWindow
          */
         public SDL_Window SDL_CreateWindow(final byte[] title, int x, int y, int w, int h, int flags);
 
@@ -1996,7 +1996,7 @@ public final class LowLevel {
          * @return the window associated with {@code id} or NULL if it doesn't exist; call
          *         SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_GetWindowID
+         * @see #SDL_GetWindowID
          */
         public SDL_Window SDL_GetWindowFromID(int id);
 
@@ -2006,13 +2006,13 @@ public final class LowLevel {
          * @param window the window to query
          * @return a mask of the SDL_WindowFlags associated with {@code window}
          *
-         * @see LowLevel.SDL2Library#SDL_CreateWindow
-         * @see LowLevel.SDL2Library#SDL_HideWindow
-         * @see LowLevel.SDL2Library#SDL_MaximizeWindow
-         * @see LowLevel.SDL2Library#SDL_MinimizeWindow
-         * @see LowLevel.SDL2Library#SDL_SetWindowFullscreen
-         * @see LowLevel.SDL2Library#SDL_SetWindowGrab
-         * @see LowLevel.SDL2Library#SDL_ShowWindow
+         * @see #SDL_CreateWindow
+         * @see #SDL_HideWindow
+         * @see #SDL_MaximizeWindow
+         * @see #SDL_MinimizeWindow
+         * @see #SDL_SetWindowFullscreen
+         * @see #SDL_SetWindowGrab
+         * @see #SDL_ShowWindow
          */
         public int SDL_GetWindowFlags(SDL_Window window);
 
@@ -2024,7 +2024,7 @@ public final class LowLevel {
          * @param window the window to change
          * @param title the desired window title in UTF-8 format
          *
-         * @see LowLevel.SDL2Library#SDL_GetWindowTitle
+         * @see #SDL_GetWindowTitle
          */
         public void SDL_SetWindowTitle(SDL_Window window, byte[] title);
 
@@ -2056,7 +2056,7 @@ public final class LowLevel {
          * @param y the y coordinate of the window in screen coordinates, or
          *          {@code SDL_WINDOWPOS_CENTERED} or {@code SDL_WINDOWPOS_UNDEFINED}
          *
-         * @see LowLevel.SDL2Library#SDL_GetWindowPosition
+         * @see #SDL_GetWindowPosition
          */
         public void SDL_SetWindowPosition(SDL_Window window, int x, int y);
 
@@ -2074,8 +2074,8 @@ public final class LowLevel {
          *
          * @since This function is available since SDL 2.0.0.
          *
-         * @see LowLevel.SDL2Library#SDL_GetWindowDisplayMode
-         * @see LowLevel.SDL2Library#SDL_SetWindowDisplayMode
+         * @see #SDL_GetWindowDisplayMode
+         * @see #SDL_SetWindowDisplayMode
          */
         public int SDL_SetWindowFullscreen(SDL_Window window, int flags);
 
@@ -2097,8 +2097,8 @@ public final class LowLevel {
          * @return the surface associated with the window, or NULL on failure; call
          *         SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_UpdateWindowSurface
-         * @see LowLevel.SDL2Library#SDL_UpdateWindowSurfaceRects
+         * @see #SDL_UpdateWindowSurface
+         * @see #SDL_UpdateWindowSurfaceRects
          */
         public SDL_Surface SDL_GetWindowSurface(SDL_Window window);
 
@@ -2114,7 +2114,7 @@ public final class LowLevel {
          * @param y a pointer filled in with the y position of the window, in screen
          *          coordinates, may be NULL
          *
-         * @see LowLevel.SDL2Library#SDL_SetWindowPosition
+         * @see #SDL_SetWindowPosition
          */
         public void SDL_GetWindowPosition(SDL_Window window, IntByReference x, IntByReference y);
 
@@ -2135,8 +2135,8 @@ public final class LowLevel {
          * @param h the height of the window in pixels, in screen coordinates, must be
          *          > 0
          *
-         * @see LowLevel.SDL2Library#SDL_GetWindowSize
-         * @see LowLevel.SDL2Library#SDL_SetWindowDisplayMode
+         * @see #SDL_GetWindowSize
+         * @see #SDL_SetWindowDisplayMode
          */
         public void SDL_SetWindowSize(SDL_Window window, int w, int h);
 
@@ -2148,8 +2148,8 @@ public final class LowLevel {
          *
          * @param window the window to destroy
          *
-         * @see LowLevel.SDL2Library#SDL_CreateWindow
-         * @see LowLevel.SDL2Library#SDL_CreateWindowFrom
+         * @see #SDL_CreateWindow
+         * @see #SDL_CreateWindowFrom
          */
         public void SDL_DestroyWindow(SDL_Window window);
 
@@ -2160,8 +2160,8 @@ public final class LowLevel {
          * @param min_w the minimum width of the window in pixels
          * @param min_h the minimum height of the window in pixels
          *
-         * @see LowLevel.SDL2Library#SDL_GetWindowMinimumSize
-         * @see LowLevel.SDL2Library#SDL_SetWindowMaximumSize
+         * @see #SDL_GetWindowMinimumSize
+         * @see #SDL_SetWindowMaximumSize
          */
         public void SDL_SetWindowMinimumSize(SDL_Window window, int min_w, int min_h);
 
@@ -2179,7 +2179,7 @@ public final class LowLevel {
          *
          * @since This function is available since SDL 2.0.0.
          *
-         * @see LowLevel.SDL2Library#SDL_GetWindowFlags
+         * @see #SDL_GetWindowFlags
          */
         public void SDL_SetWindowBordered(SDL_Window window, boolean bordered);
 
@@ -2197,7 +2197,7 @@ public final class LowLevel {
          *
          * @since This function is available since SDL 2.0.5.
          *
-         * @see LowLevel.SDL2Library#SDL_GetWindowFlags
+         * @see #SDL_GetWindowFlags
          */
         public void SDL_SetWindowResizable(SDL_Window window, boolean resizable);
 
@@ -2206,8 +2206,8 @@ public final class LowLevel {
          *
          * @param window the window to show
          *
-         * @see LowLevel.SDL2Library#SDL_HideWindow
-         * @see LowLevel.SDL2Library#SDL_RaiseWindow
+         * @see #SDL_HideWindow
+         * @see #SDL_RaiseWindow
          */
         public void SDL_ShowWindow(SDL_Window window);
 
@@ -2216,7 +2216,7 @@ public final class LowLevel {
          *
          * @param window the window to hide
          *
-         * @see LowLevel.SDL2Library#SDL_ShowWindow
+         * @see #SDL_ShowWindow
          */
         public void SDL_HideWindow(SDL_Window window);
 
@@ -2234,9 +2234,9 @@ public final class LowLevel {
          * @return 0 on success or a negative error code on failure; call
          *         SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_GetCurrentDisplayMode
-         * @see LowLevel.SDL2Library#SDL_GetDisplayMode
-         * @see LowLevel.SDL2Library#SDL_SetWindowDisplayMode
+         * @see #SDL_GetCurrentDisplayMode
+         * @see #SDL_GetDisplayMode
+         * @see #SDL_SetWindowDisplayMode
          */
         public int SDL_GetDesktopDisplayMode(int displayIndex, SDL_DisplayMode mode);
 
@@ -2266,7 +2266,7 @@ public final class LowLevel {
          * @return 0 on success or a negative error code on failure; call
          *         SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_GetWindowGammaRamp
+         * @see #SDL_GetWindowGammaRamp
          */
         public int SDL_SetWindowGammaRamp(SDL_Window window, Pointer red, Pointer green, Pointer blue);
 
@@ -2316,9 +2316,9 @@ public final class LowLevel {
          * @return a pointer to the named OpenGL function. The returned pointer
          *         should be cast to the appropriate function signature.
          *
-         * @see LowLevel.SDL2Library#SDL_GL_ExtensionSupported
-         * @see LowLevel.SDL2Library#SDL_GL_LoadLibrary
-         * @see LowLevel.SDL2Library#SDL_GL_UnloadLibrary
+         * @see #SDL_GL_ExtensionSupported
+         * @see #SDL_GL_LoadLibrary
+         * @see #SDL_GL_UnloadLibrary
          */
         public Pointer SDL_GL_GetProcAddress(final String proc);
 
@@ -2335,8 +2335,8 @@ public final class LowLevel {
          * @return 0 on success or a negative error code on failure; call
          *         SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_GL_GetAttribute
-         * @see LowLevel.SDL2Library#SDL_GL_ResetAttributes
+         * @see #SDL_GL_GetAttribute
+         * @see #SDL_GL_ResetAttributes
          */
         public int SDL_GL_SetAttribute(int attr, int value);
 
@@ -2355,8 +2355,8 @@ public final class LowLevel {
          * @return the OpenGL context associated with {@code window} or NULL on error; call
          *         SDL_GetError() for more details.
          *
-         * @see LowLevel.SDL2Library#SDL_GL_DeleteContext
-         * @see LowLevel.SDL2Library#SDL_GL_MakeCurrent
+         * @see #SDL_GL_DeleteContext
+         * @see #SDL_GL_MakeCurrent
          */
         public Pointer SDL_GL_CreateContext(SDL_Window window);
 
@@ -2370,7 +2370,7 @@ public final class LowLevel {
          * @return 0 on success or a negative error code on failure; call
          *         SDL_GetError() for more information.
          *
-         * @see LowLevel.SDL2Library#SDL_GL_CreateContext
+         * @see #SDL_GL_CreateContext
          */
         public int SDL_GL_MakeCurrent(SDL_Window window, Pointer context);
 
@@ -2379,7 +2379,7 @@ public final class LowLevel {
          *
          * @param context the OpenGL context to be deleted
          *
-         * @see LowLevel.SDL2Library#SDL_GL_CreateContext
+         * @see #SDL_GL_CreateContext
          */
         public void SDL_GL_DeleteContext(Pointer context);
 
@@ -2413,7 +2413,7 @@ public final class LowLevel {
          *
          * @since This function is available since SDL 2.0.0.
          *
-         * @see LowLevel.SDL2Library#SDL_GL_GetSwapInterval
+         * @see #SDL_GL_GetSwapInterval
          */
         public int SDL_GL_SetSwapInterval(int interval);
         //#endregion
