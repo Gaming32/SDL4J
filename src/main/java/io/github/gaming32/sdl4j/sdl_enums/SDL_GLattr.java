@@ -1,0 +1,36 @@
+package io.github.gaming32.sdl4j.sdl_enums;
+
+/**
+ * OpenGL configuration attributes
+ */
+public final class SDL_GLattr {
+    public static final int
+
+    RED_SIZE = 0,
+    GREEN_SIZE = 1,
+    BLUE_SIZE = 2,
+    ALPHA_SIZE = 3,
+    BUFFER_SIZE = 4,
+    DOUBLEBUFFER = 5,
+    DEPTH_SIZE = 6,
+    STENCIL_SIZE = 7,
+    ACCUM_RED_SIZE = 8,
+    ACCUM_GREEN_SIZE = 9,
+    ACCUM_BLUE_SIZE = 10,
+    ACCUM_ALPHA_SIZE = 11,
+    STEREO = 12,
+    MULTISAMPLEBUFFERS = 13,
+    MULTISAMPLESAMPLES = 14,
+    ACCELERATED_VISUAL = 15,
+    RETAINED_BACKING = 16,
+    CONTEXT_MAJOR_VERSION = 17,
+    CONTEXT_MINOR_VERSION = 18,
+    CONTEXT_EGL = 19,
+    CONTEXT_FLAGS = 20,
+    CONTEXT_PROFILE_MASK = 21,
+    SHARE_WITH_CURRENT_CONTEXT = 22,
+    FRAMEBUFFER_SRGB_CAPABLE = 23,
+    CONTEXT_RELEASE_BEHAVIOR = 24,
+    CONTEXT_RESET_NOTIFICATION = 25,
+    CONTEXT_NO_ERROR = 26;
+}

@@ -78,4 +78,22 @@ public final class SDL4J {
     static Surface getDefaultWindowSurface() {
         return defaultScreen;
     }
+
+    static void setDefaultWindow(SDL_Window win) {
+        SDL2Library lib = LowLevel.getInstance();
+        if (win.equals(defaultWindow)) {
+            return;
+        }
+        if (defaultWindow != null) {
+            lib.SDL_DestroyWindow(defaultWindow);
+        }
+        defaultWindow = win;
+    }
+
+    static void setDefaultWindowSurface(Surface screen) {
+        if (screen == defaultScreen) {
+            return;
+        }
+        defaultScreen = screen;
+    }
 }
