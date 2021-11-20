@@ -2,12 +2,15 @@ package io.github.gaming32.sdl4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Memory;
+import com.sun.jna.PointerType;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
@@ -226,8 +229,7 @@ public final class LowLevel {
             /** The associated display index */
             public int display;
             public byte event;
-            @SuppressWarnings("unused")
-            private int padding1, padding2, padding3;
+            public int padding1, padding2, padding3;
             /** event dependent data */
             public int data1;
         }
@@ -248,8 +250,7 @@ public final class LowLevel {
             /** The associated window */
             public int windowID;
             public byte event;
-            @SuppressWarnings("unused")
-            private int padding1, padding2, padding3;
+            public int padding1, padding2, padding3;
             /** event dependent data */
             public int data1, data2;
         }
@@ -271,8 +272,7 @@ public final class LowLevel {
             public byte state;
             /** Non-zero if this is a key repeat */
             public byte repeat;
-            @SuppressWarnings("unused")
-            private byte padding2, padding3;
+            public byte padding2, padding3;
             /** The key that was pressed or released */
             public SDL_Keysym keysym;
         }
@@ -367,8 +367,7 @@ public final class LowLevel {
             public byte state;
             /** 1 for single-click, 2 for double-click, etc. */
             public byte clicks;
-            @SuppressWarnings("unused")
-            private byte padding1;
+            public byte padding1;
             /** X coordinate, relative to window */
             public int x;
             /** Y coordinate, relative to window */
@@ -414,8 +413,7 @@ public final class LowLevel {
             public int which;
             /** The joystick axis index */
             public byte axis;
-            @SuppressWarnings("unused")
-            private byte padding1, padding2, padding3;
+            public byte padding1, padding2, padding3;
             /** The axis value (range: -32768 to 32767) */
             public short value;
         }
@@ -437,8 +435,7 @@ public final class LowLevel {
             public int which;
             /** The joystick trackball index */
             public byte ball;
-            @SuppressWarnings("unused")
-            private byte padding1, padding2, padding3;
+            public byte padding1, padding2, padding3;
             /** The relative motion in the X direction */
             public short xrel;
             /** The relative motion in the Y direction */
@@ -465,8 +462,7 @@ public final class LowLevel {
              * @apiNote Note that zero means the POV is centered.
              */
             public byte value;
-            @SuppressWarnings("unused")
-            private byte padding1, padding2;
+            public byte padding1, padding2;
         }
 
         /**
@@ -486,8 +482,7 @@ public final class LowLevel {
             public byte button;
             /** ::SDL_PRESSED or ::SDL_RELEASED */
             public byte state;
-            @SuppressWarnings("unused")
-            private byte padding1, padding2;
+            public byte padding1, padding2;
         }
 
         /**
@@ -518,12 +513,10 @@ public final class LowLevel {
             public int which;
             /** The controller axis (SDL_GameControllerAxis) */
             public byte axis;
-            @SuppressWarnings("unused")
-            private byte padding1, padding2, padding3;
+            public byte padding1, padding2, padding3;
             /** The axis value (range: -32768 to 32767) */
             public short value;
-            @SuppressWarnings("unused")
-            private short padding4;
+            public short padding4;
         }
 
         /**
@@ -543,8 +536,7 @@ public final class LowLevel {
             public byte button;
             /** ::SDL_PRESSED or ::SDL_RELEASED */
             public byte state;
-            @SuppressWarnings("unused")
-            private byte padding1, padding2;
+            public byte padding1, padding2;
         }
 
         /**
@@ -616,8 +608,7 @@ public final class LowLevel {
             public int which;
             /** zero if an output device, non-zero if a capture device. */
             public byte iscapture;
-            @SuppressWarnings("unused")
-            private byte padding1, padding2, padding3;
+            public byte padding1, padding2, padding3;
         }
 
         /**
@@ -665,8 +656,7 @@ public final class LowLevel {
             public float dTheta, dDist;
             public float x, y;
             public short numFingers;
-            @SuppressWarnings("unused")
-            private short padding;
+            public short padding;
         }
 
         /**
@@ -1325,6 +1315,14 @@ public final class LowLevel {
             "a"
         })
         public static class SDL_Color extends Structure {
+            public static class ByReference extends SDL_Color implements Structure.ByReference {
+                public ByReference() { }
+                public ByReference(Pointer p) { super(p); }
+            }
+
+            public SDL_Color() { }
+            public SDL_Color(Pointer p) { super(p); read(); }
+
             public byte r;
             public byte g;
             public byte b;
@@ -1338,6 +1336,14 @@ public final class LowLevel {
             "refcount"
         })
         public static class SDL_Palette extends Structure {
+            public static class ByReference extends SDL_Palette implements Structure.ByReference {
+                public ByReference() { }
+                public ByReference(Pointer p) { super(p); }
+            }
+
+            public SDL_Palette() { }
+            public SDL_Palette(Pointer p) { super(p); read(); }
+
             public int ncolors;
             public SDL_Color.ByReference colors;
             public int version;
@@ -1369,6 +1375,14 @@ public final class LowLevel {
             "next"
         })
         public static class SDL_PixelFormat extends Structure {
+            public static class ByReference extends SDL_PixelFormat implements Structure.ByReference {
+                public ByReference() { }
+                public ByReference(Pointer p) { super(p); }
+            }
+
+            public SDL_PixelFormat() { }
+            public SDL_PixelFormat(Pointer p) { super(p); read(); }
+
             public int format;
             public SDL_Palette.ByReference palette;
             public byte BitsPerPixel;
@@ -1438,12 +1452,12 @@ public final class LowLevel {
         /**
          * A structure representing rendering state
          */
-        public static final class SDL_Renderer extends Structure {}
+        public static final class SDL_Renderer extends PointerType {}
 
         /**
          * An efficient driver-specific representation of pixel data
          */
-        public static final class SDL_Texture extends Structure {}
+        public static final class SDL_Texture extends PointerType {}
 
         /**
          * Create a 2D rendering context for a window.
@@ -1608,8 +1622,7 @@ public final class LowLevel {
              *
              * <p>Private</p>
              */
-            @SuppressWarnings("unused")
-            private Pointer list_blitmap;
+            public Pointer list_blitmap;
 
             /**
              * <p>clipping information</p>
@@ -1623,8 +1636,7 @@ public final class LowLevel {
              *
              * <p>Private</p>
              */
-            @SuppressWarnings("unused")
-            private Pointer map;
+            public Pointer map;
 
             /**
              * <p>Reference count -- used when freeing surface</p>
@@ -1785,7 +1797,7 @@ public final class LowLevel {
          * @see LowLevel.SDL2Library#SDL_SetWindowTitle
          * @see LowLevel.SDL2Library#SDL_ShowWindow
          */
-        public static final class SDL_Window extends Structure {}
+        public static final class SDL_Window extends PointerType {}
 
         /**
          * Used to indicate that you don't care what the window position is.
@@ -1971,7 +1983,7 @@ public final class LowLevel {
          * @see #SDL_CreateWindow(byte[], int, int, int, int, int)
          */
         default public SDL_Window SDL_CreateWindow(final String title, int x, int y, int w, int h, int flags) {
-            return SDL_CreateWindow(title.getBytes(StandardCharsets.UTF_8), x, y, w, h, flags);
+            return SDL_CreateWindow(Util.toByteArray(title), x, y, w, h, flags);
         }
 
         /**
@@ -2022,7 +2034,7 @@ public final class LowLevel {
          * @see #SDL_SetWindowTitle(SDL_Window, byte[])
          */
         default public void SDL_SetWindowTitle(SDL_Window window, String title) {
-            SDL_SetWindowTitle(window, title.getBytes(StandardCharsets.UTF_8));
+            SDL_SetWindowTitle(window, Util.toByteArray(title));
         }
 
         /**
@@ -2429,6 +2441,17 @@ public final class LowLevel {
             byte[] data = new byte[size];
             from.getPointer().read(0, data, 0, size);
             to.getPointer().write(0, data, 0, size);
+        }
+
+        public static final byte[] toByteArray(String s, Charset charset) {
+            byte[] base = s.getBytes(charset);
+            byte[] result = Arrays.copyOf(base, base.length + 1);
+            result[base.length] = 0;
+            return result;
+        }
+
+        public static final byte[] toByteArray(String s) {
+            return toByteArray(s, StandardCharsets.UTF_8);
         }
     }
 
