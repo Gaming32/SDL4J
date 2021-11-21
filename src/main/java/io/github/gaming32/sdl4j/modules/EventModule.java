@@ -11,6 +11,7 @@ import io.github.gaming32.sdl4j.LowLevel;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Event;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_KeyboardEvent;
+import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Keysym;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_MouseButtonEvent;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_MouseWheelEvent;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_TextInputEvent;
@@ -20,6 +21,8 @@ import io.github.gaming32.sdl4j.SDL4J.Module;
 import io.github.gaming32.sdl4j.enums.MouseFlags;
 import io.github.gaming32.sdl4j.sdl_enums.SDL4J_EventCode;
 import io.github.gaming32.sdl4j.sdl_enums.SDL_EventType;
+import io.github.gaming32.sdl4j.sdl_enums.SDL_KeyCode;
+import io.github.gaming32.sdl4j.sdl_enums.SDL_Keymod;
 import io.github.gaming32.sdl4j.sdl_enums.SDL_WindowEventID;
 
 public final class EventModule implements Module {
@@ -34,11 +37,6 @@ public final class EventModule implements Module {
     private final class ScanAndUnicode {
         int key;
         String unicode;
-
-        ScanAndUnicode() {
-            this.key = 0;
-            this.unicode = "";
-        }
 
         ScanAndUnicode(int key, String unicode) {
             this.key = key;
@@ -247,5 +245,82 @@ public final class EventModule implements Module {
             }
         }
         return false;
+    }
+
+    public String getEventUnicode(SDL_Event event) {
+        return getEventUnicode(event, event.getType(), (SDL_Keysym)event.getProperValue(SDL_KeyboardEvent.class).readField("keysym"));
+    }
+
+    public String getEventUnicode(SDL_Event event, int eventType, SDL_Keysym keysym) {
+        for (int i = 0; i < MAX_SCAN_UNICODE; i++) {
+            if (scanUnicode[i].key == keysym.scancode) {
+                if (eventType == SDL_EventType.KEYUP) {
+                    scanUnicode[i].key = 0;
+                }
+                return scanUnicode[i].unicode;
+            }
+        }
+        return new String(new char[] { unicodeFromEvent(keysym) });
+    }
+
+    private static char unicodeFromEvent(SDL_Keysym keysym) {
+        boolean capsHeld = (keysym.mod & SDL_Keymod.CAPS) != 0;
+        boolean shiftHeld = (keysym.mod & SDL_Keymod.SHIFT) != 0;
+
+        boolean capitalize = (capsHeld && !shiftHeld) || (shiftHeld && !capsHeld);
+        int key = keysym.sym;
+
+        if ((keysym.mod & SDL_Keymod.CTRL) != 0) {
+            if (key >= SDL_KeyCode.a && key <= SDL_KeyCode.z) {
+                return (char)(key - SDL_KeyCode.a + 1);
+            } else {
+                switch (key) {
+                    case SDL_KeyCode.SDLK_2:
+                    case SDL_KeyCode.AT:
+                        return '\0';
+                    case SDL_KeyCode.SDLK_3:
+                    case SDL_KeyCode.LEFTBRACKET:
+                        return 0x1b;
+                    case SDL_KeyCode.SDLK_4:
+                    case SDL_KeyCode.BACKSLASH:
+                        return 0x1c;
+                    case SDL_KeyCode.SDLK_5:
+                    case SDL_KeyCode.RIGHTBRACKET:
+                        return 0x1d;
+                    case SDL_KeyCode.SDLK_6:
+                    case SDL_KeyCode.CARET:
+                        return 0x1e;
+                    case SDL_KeyCode.SDLK_7:
+                    case SDL_KeyCode.UNDERSCORE:
+                        return 0x1f;
+                    case SDL_KeyCode.SDLK_8:
+                        return 0x7f;
+                }
+            }
+        }
+        if (key < 128) {
+            if (capitalize && key >= SDL_KeyCode.a && key <= SDL_KeyCode.z) {
+                return (char)(key + 'A' - 'a');
+            }
+            return (char)key;
+        }
+
+        switch (key) {
+            case 1073741923: // SDL_KeyCode.KP_PERIOD
+                return '.';
+            case 1073741908: // SDL_KeyCode.KP_DIVIDE
+                return '/';
+            case 1073741909: // SDL_KeyCode.KP_MULTIPLY
+                return '*';
+            case 1073741910: // SDL_KeyCode.KP_MINUS
+                return '-';
+            case 1073741911: // SDL_KeyCode.KP_PLUS
+                return '+';
+            case 1073741912: // SDL_KeyCode.KP_ENTER
+                return '\r';
+            case 1073741927: // SDL_KeyCode.KP_EQUALS
+                return '=';
+        }
+        return '\0';
     }
 }

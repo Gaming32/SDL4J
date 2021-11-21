@@ -475,9 +475,7 @@ public final class Display {
         SDL_Window win = SDL4J.getDefaultWindow();
         int status = 0;
 
-        if (lib.SDL_WasInit(SDL2Library.SDL_INIT_VIDEO) == 0) {
-            throw new IllegalStateException("Video system not initialized");
-        }
+        SDL4J.videoInitCheck();
         if (win == null) {
             throw new IllegalStateException("Display mode not set");
         }

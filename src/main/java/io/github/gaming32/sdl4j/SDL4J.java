@@ -96,4 +96,11 @@ public final class SDL4J {
         }
         defaultScreen = screen;
     }
+
+    static void videoInitCheck() {
+        SDL2Library lib = LowLevel.getInstance();
+        if (lib.SDL_WasInit(SDL2Library.SDL_INIT_VIDEO) == 0) {
+            throw new IllegalStateException("Video system not initialized");
+        }
+    }
 }

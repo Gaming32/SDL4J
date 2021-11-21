@@ -10,12 +10,13 @@ import java.util.Arrays;
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Memory;
-import com.sun.jna.PointerType;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
+import com.sun.jna.PointerType;
 import com.sun.jna.Structure;
 import com.sun.jna.Structure.FieldOrder;
+import com.sun.jna.TypeMapper;
 import com.sun.jna.Union;
 import com.sun.jna.ptr.IntByReference;
 
@@ -744,10 +745,7 @@ public final class LowLevel {
          *  @apiNote If you want to use this event, you should include SDL_syswm.h.
          */
         @FieldOrder({
-            "windowID",
-            "code",
-            "data1",
-            "data2"
+            "msg"
         })
         public static class SDL_SysWMEvent extends SDL_CommonEvent {
             /** User defined event code */
@@ -758,71 +756,86 @@ public final class LowLevel {
          * General event structure
          */
         public static class SDL_Event extends Union {
+            public SDL_Event() { }
+
             public SDL_Event(Pointer p) {
                 super(p);
-                read();
             }
 
-            int type;
+            public SDL_Event(Pointer p, int alignType) {
+                super(p, alignType);
+            }
+
+            public SDL_Event(TypeMapper mapper) {
+                super(mapper);
+            }
+
+            public SDL_Event(Pointer p, int alignType, TypeMapper mapper) {
+                super(p, alignType, mapper);
+            }
+
+            public int type;
             /** Common event data */
-            SDL_CommonEvent common;
+            public SDL_CommonEvent common;
             /** Display event data */
-            SDL_DisplayEvent display;
+            public SDL_DisplayEvent display;
             /** Window event data */
-            SDL_WindowEvent window;
+            public SDL_WindowEvent window;
             /** Keyboard event data */
-            SDL_KeyboardEvent key;
+            public SDL_KeyboardEvent key;
             /** Text editing event data */
-            SDL_TextEditingEvent edit;
+            public SDL_TextEditingEvent edit;
             /** Text input event data */
-            SDL_TextInputEvent text;
+            public SDL_TextInputEvent text;
             /** Mouse motion event data */
-            SDL_MouseMotionEvent motion;
+            public SDL_MouseMotionEvent motion;
             /** Mouse button event data */
-            SDL_MouseButtonEvent button;
+            public SDL_MouseButtonEvent button;
             /** Mouse wheel event data */
-            SDL_MouseWheelEvent wheel;
+            public SDL_MouseWheelEvent wheel;
             /** Joystick axis event data */
-            SDL_JoyAxisEvent jaxis;
+            public SDL_JoyAxisEvent jaxis;
             /** Joystick ball event data */
-            SDL_JoyBallEvent jball;
+            public SDL_JoyBallEvent jball;
             /** Joystick hat event data */
-            SDL_JoyHatEvent jhat;
+            public SDL_JoyHatEvent jhat;
             /** Joystick button event data */
-            SDL_JoyButtonEvent jbutton;
+            public SDL_JoyButtonEvent jbutton;
             /** Joystick device change event data */
-            SDL_JoyDeviceEvent jdevice;
+            public SDL_JoyDeviceEvent jdevice;
             /** Game Controller axis event data */
-            SDL_ControllerAxisEvent caxis;
+            public SDL_ControllerAxisEvent caxis;
             /** Game Controller button event data */
-            SDL_ControllerButtonEvent cbutton;
+            public SDL_ControllerButtonEvent cbutton;
             /** Game Controller device event data */
-            SDL_ControllerDeviceEvent cdevice;
+            public SDL_ControllerDeviceEvent cdevice;
             /** Game Controller touchpad event data */
-            SDL_ControllerTouchpadEvent ctouchpad;
+            public SDL_ControllerTouchpadEvent ctouchpad;
             /** Game Controller sensor event data */
-            SDL_ControllerSensorEvent csensor;
+            public SDL_ControllerSensorEvent csensor;
             /** Audio device event data */
-            SDL_AudioDeviceEvent adevice;
+            public SDL_AudioDeviceEvent adevice;
             /** Sensor event data */
-            SDL_SensorEvent sensor;
+            public SDL_SensorEvent sensor;
             /** Quit request event data */
-            SDL_QuitEvent quit;
+            public SDL_QuitEvent quit;
             /** Custom event data */
-            SDL_UserEvent user;
+            public SDL_UserEvent user;
             /** System dependent window event data */
-            SDL_SysWMEvent syswm;
+            public SDL_SysWMEvent syswm;
             /** Touch finger event data */
-            SDL_TouchFingerEvent tfinger;
+            public SDL_TouchFingerEvent tfinger;
             /** Gesture event data */
-            SDL_MultiGestureEvent mgesture;
+            public SDL_MultiGestureEvent mgesture;
             /** Gesture event data */
-            SDL_DollarGestureEvent dgesture;
+            public SDL_DollarGestureEvent dgesture;
             /** Drag and drop event data */
-            SDL_DropEvent drop;
+            public SDL_DropEvent drop;
+
+            public byte[] padding = new byte[56];
 
             public int getType() {
-                return (int)getTypedValue(int.class);
+                return getProperValue(int.class);
             }
 
             public void setTypeFromID(int type) {
@@ -835,7 +848,6 @@ public final class LowLevel {
 
             @SuppressWarnings("unchecked")
             public <T> T getProperValue(Class<T> clazz) {
-                setProperType();
                 return (T)getTypedValue(clazz);
             }
 
@@ -917,6 +929,53 @@ public final class LowLevel {
          * @see #SDL_WaitEvent
          */
         public void SDL_PumpEvents();
+
+        /**
+         * <p>Check the event queue for messages and optionally return them.</p>
+         *
+         * <p>{@code action} may be any of the following:</p>
+         *
+         * <ul>
+         *   <li>{@code SDL_ADDEVENT}: up to {@code numevents} events will be added to the back of the
+         *       event queue.</li>
+         *   <li>{@code SDL_PEEKEVENT}: {@code numevents} events at the front of the event queue,
+         *       within the specified minimum and maximum type, will be returned to the
+         *       caller and will <i>not</i> be removed from the queue.</li>
+         *   <li>{@code SDL_GETEVENT}: up to {@code numevents} events at the front of the event queue,
+         *       within the specified minimum and maximum type, will be returned to the
+         *       caller and will be removed from the queue.</li>
+         *
+         * <p>You may have to call SDL_PumpEvents() before calling this function.
+         * Otherwise, the events may not be ready to be filtered when you call
+         * SDL_PeepEvents().</p>
+         *
+         * <p>This function is thread-safe.</p>
+         *
+         * @param events destination buffer for the retrieved events
+         * @param numevents if action is SDL_ADDEVENT, the number of events to add
+         *                  back to the event queue; if action is SDL_PEEKEVENT or
+         *                  SDL_GETEVENT, the maximum number of events to retrieve
+         * @param action action to take; see [[#action|Remarks]] for details
+         * @param minType minimum value of the event type to be considered;
+         *                SDL_FIRSTEVENT is a safe choice
+         * @param maxType maximum value of the event type to be considered;
+         *                SDL_LASTEVENT is a safe choice
+         * @return the number of events actually stored or a negative error code on
+         *         failure; call SDL_GetError() for more information.
+         *
+         * @see #SDL_PollEvent
+         * @see #SDL_PumpEvents
+         * @see #SDL_PushEvent
+         */
+        public int SDL_PeepEvents(SDL_Event events, int numevents, int action, int minType, int maxType);
+
+        /**
+         * Same as {@link #SDL_PeepEvents(SDL_Event, int, int, int, int)}, but gets all events, regardless of type
+         * @see #SDL_PeepEvents(SDL_Event, int, int, int, int)
+         */
+        default public int SDL_PeepEvents(SDL_Event events, int numevents, int action) {
+            return SDL_PeepEvents(events, numevents, action, SDL_EventType.FIRSTEVENT, SDL_EventType.LASTEVENT);
+        }
 
         /**
          * A function pointer used for callbacks that watch the event queue.
@@ -1092,6 +1151,16 @@ public final class LowLevel {
         //#endregion
 
         //#region SDL_joystick.h
+        public static final int SDL_HAT_CENTERED  = 0x00;
+        public static final int SDL_HAT_UP        = 0x01;
+        public static final int SDL_HAT_RIGHT     = 0x02;
+        public static final int SDL_HAT_DOWN      = 0x04;
+        public static final int SDL_HAT_LEFT      = 0x08;
+        public static final int SDL_HAT_RIGHTUP   = SDL_HAT_RIGHT | SDL_HAT_UP;
+        public static final int SDL_HAT_RIGHTDOWN = SDL_HAT_RIGHT | SDL_HAT_DOWN;
+        public static final int SDL_HAT_LEFTUP    = SDL_HAT_LEFT | SDL_HAT_UP;
+        public static final int SDL_HAT_LEFTDOWN  = SDL_HAT_LEFT | SDL_HAT_DOWN;
+
         /**
          * <p>Enable/disable joystick event polling.</p>
          *
@@ -1901,6 +1970,11 @@ public final class LowLevel {
          * @see #SDL_AddTimer
          */
         public boolean SDL_RemoveTimer(int id);
+        //#endregion
+
+        //#region SDL_touch.h
+        public static final int SDL_TOUCH_MOUSEID = -1;
+        public static final int SDL_MOUSE_TOUCHID = -1;
         //#endregion
 
         //#region SDL_video.h
