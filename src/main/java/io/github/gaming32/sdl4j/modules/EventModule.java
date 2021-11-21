@@ -10,6 +10,7 @@ import io.github.gaming32.sdl4j.LowLevel;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Event;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_KeyboardEvent;
+import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_MouseButtonEvent;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_TextInputEvent;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_WindowEvent;
 import io.github.gaming32.sdl4j.LowLevel.Util;
@@ -86,55 +87,70 @@ public final class EventModule implements Module {
         SDL_Event newdownevent, newupevent, newevent = Util.copyStructure(SDL_Event.class, event);
         int x, y, i;
 
-        if (event.getType() == SDL_EventType.WINDOWEVENT) {
-            SDL_WindowEvent windowEvent = event.getProperValue(SDL_WindowEvent.class);
-            switch (windowEvent.event) {
-                case SDL_WindowEventID.RESIZED:
-                    lib.SDL_FilterEvents(this::removePendingVideoResize, newevent.getPointer());
+        switch (event.getType()) {
+            case SDL_EventType.WINDOWEVENT:
+                SDL_WindowEvent windowEvent = event.getProperValue(SDL_WindowEvent.class);
+                switch (windowEvent.event) {
+                    case SDL_WindowEventID.RESIZED:
+                        lib.SDL_FilterEvents(this::removePendingVideoResize, newevent.getPointer());
 
-                    newevent.writeField("type", SDL4J_EventCode.VIDEORESIZE);
-                    lib.SDL_PushEvent(newevent);
-                    break;
-                case SDL_WindowEventID.EXPOSED:
-                    lib.SDL_FilterEvents(this::removePendingVideoExpose, newevent.getPointer());
+                        newevent.writeField("type", SDL4J_EventCode.VIDEORESIZE);
+                        lib.SDL_PushEvent(newevent);
+                        break;
+                    case SDL_WindowEventID.EXPOSED:
+                        lib.SDL_FilterEvents(this::removePendingVideoExpose, newevent.getPointer());
 
-                    newevent.writeField("type", SDL4J_EventCode.VIDEOEXPOSE);
-                    lib.SDL_PushEvent(newevent);
-                    break;
-                case SDL_WindowEventID.ENTER:
-                case SDL_WindowEventID.LEAVE:
-                case SDL_WindowEventID.FOCUS_GAINED:
-                case SDL_WindowEventID.FOCUS_LOST:
-                case SDL_WindowEventID.MINIMIZED:
-                case SDL_WindowEventID.RESTORED:
-                    newevent.writeField("type", SDL4J_EventCode.ACTIVEEVENT);
-                    lib.SDL_PushEvent(newevent);
-            }
-        } else if (event.getType() == SDL_EventType.KEYDOWN) {
-            if (event.getProperValue(SDL_KeyboardEvent.class).repeat != 0) {
-                return false;
-            }
-
-            if (keyRepeatDelay > 0) {
-                if (repeatTimer != 0) {
-                    lib.SDL_RemoveTimer(repeatTimer);
+                        newevent.writeField("type", SDL4J_EventCode.VIDEOEXPOSE);
+                        lib.SDL_PushEvent(newevent);
+                        break;
+                    case SDL_WindowEventID.ENTER:
+                    case SDL_WindowEventID.LEAVE:
+                    case SDL_WindowEventID.FOCUS_GAINED:
+                    case SDL_WindowEventID.FOCUS_LOST:
+                    case SDL_WindowEventID.MINIMIZED:
+                    case SDL_WindowEventID.RESTORED:
+                        newevent.writeField("type", SDL4J_EventCode.ACTIVEEVENT);
+                        lib.SDL_PushEvent(newevent);
+                }
+                break;
+            case SDL_EventType.KEYDOWN:
+                if (event.getProperValue(SDL_KeyboardEvent.class).repeat != 0) {
+                    return false;
                 }
 
-                Util.copyStructureInPlace(event, repeatEvent);
-                repeatTimer = lib.SDL_AddTimer(keyRepeatDelay, this::repeatCallback, null);
-            }
+                if (keyRepeatDelay > 0) {
+                    if (repeatTimer != 0) {
+                        lib.SDL_RemoveTimer(repeatTimer);
+                    }
 
-            if (lastKeyDownEvent == null) {
-                lastKeyDownEvent = Union.newInstance(SDL_Event.class);
-            }
-            Util.copyStructureInPlace(event, lastKeyDownEvent);
-        } else if (event.getType() == SDL_EventType.TEXTINPUT) {
-            if (lastKeyDownEvent != null) {
-                putEventUnicode(lastKeyDownEvent, event.getProperValue(SDL_TextInputEvent.class).text);
-                lastKeyDownEvent = null;
-            }
-        } else if (event.getType() == SDL4J_EventCode.KEYREPEAT) {
-            event.writeField("type", SDL_EventType.KEYDOWN);
+                    Util.copyStructureInPlace(event, repeatEvent);
+                    repeatTimer = lib.SDL_AddTimer(keyRepeatDelay, this::repeatCallback, null);
+                }
+
+                if (lastKeyDownEvent == null) {
+                    lastKeyDownEvent = Union.newInstance(SDL_Event.class);
+                }
+                Util.copyStructureInPlace(event, lastKeyDownEvent);
+                break;
+            case SDL_EventType.TEXTINPUT:
+                if (lastKeyDownEvent != null) {
+                    putEventUnicode(lastKeyDownEvent, event.getProperValue(SDL_TextInputEvent.class).text);
+                    lastKeyDownEvent = null;
+                }
+                break;
+            case SDL4J_EventCode.KEYREPEAT:
+                event.writeField("type", SDL_EventType.KEYDOWN);
+                break;
+            case SDL_EventType.KEYUP:
+                if (repeatTimer != 0 && repeatEvent.getProperValue(SDL_KeyboardEvent.class).keysym.scancode == event.getProperValue(SDL_KeyboardEvent.class).keysym.scancode) {
+                    lib.SDL_RemoveTimer(repeatTimer);
+                    repeatTimer = 0;
+                }
+                break;
+            case SDL_EventType.MOUSEBUTTONDOWN:
+            case SDL_EventType.MOUSEBUTTONUP:
+                SDL_MouseButtonEvent buttonEvent = event.getProperValue(SDL_MouseButtonEvent.class);
+                break;
         }
 
         return lib.SDL_EventState(event.getType(), SDL2Library.SDL_QUERY);
