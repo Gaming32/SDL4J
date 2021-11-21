@@ -385,6 +385,7 @@ public final class Display {
             if (surf == null) {
                 setModeFailure(lib, win);
             }
+            surf.read();
             if (surface == null) {
                 surface = new Surface(surf, newOwnedSurf != null);
             } else {
@@ -395,8 +396,7 @@ public final class Display {
             SDL4J.setDefaultWindowSurface(surface);
 
             if (initFlip) {
-                // TODO Implement flipInternal
-                // flipInternal();
+                flipInternal();
             }
         }
 
@@ -468,6 +468,42 @@ public final class Display {
             }
         }
         return display;
+    }
+
+    protected static void flipInternal() {
+        SDL2Library lib = LowLevel.getInstance();
+        SDL_Window win = SDL4J.getDefaultWindow();
+        int status = 0;
+
+        if (lib.SDL_WasInit(SDL2Library.SDL_INIT_VIDEO) == 0) {
+            throw new IllegalStateException("Video system not initialized");
+        }
+        if (win == null) {
+            throw new IllegalStateException("Display mode not set");
+        }
+
+        if (STATE.usingGl) {
+            lib.SDL_GL_SwapWindow(win);
+        } else {
+            if (renderer != null) {
+                SDL_Surface screen = SDL4J.getDefaultWindowSurface().surf;
+                lib.SDL_UpdateTexture(texture, null, screen.pixels, screen.pitch);
+                lib.SDL_RenderClear(renderer);
+                lib.SDL_RenderCopy(renderer, texture, null, null);
+                lib.SDL_RenderPresent(renderer);
+            } else {
+                Surface screen = SDL4J.getDefaultWindowSurface();
+                SDL_Surface newSurface = lib.SDL_GetWindowSurface(win);
+                if (!newSurface.equals(screen.surf)) {
+                    screen.surf = newSurface;
+                }
+                status = lib.SDL_UpdateWindowSurface(win);
+            }
+        }
+
+        if (status < 0) {
+            SDLException.throwNew();
+        }
     }
 
     protected static boolean resizeEventWatch(Pointer userdata, SDL_Event event) {

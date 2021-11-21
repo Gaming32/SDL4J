@@ -1499,6 +1499,114 @@ public final class LowLevel {
         public SDL_Texture SDL_CreateTexture(SDL_Renderer renderer, int format, int access, int w, int h);
 
         /**
+         * <p>Update the given texture rectangle with new pixel data.</p>
+         *
+         * <p>The pixel data must be in the pixel format of the texture. Use
+         * SDL_QueryTexture() to query the pixel format of the texture.</p>
+         *
+         * <p>This is a fairly slow function, intended for use with static textures that
+         * do not change often.</p>
+         *
+         * <p>If the texture is intended to be updated often, it is preferred to create
+         * the texture as streaming and use the locking functions referenced below.
+         * While this function will work with streaming textures, for optimization
+         * reasons you may not get the pixels back if you lock the texture afterward.</p>
+         *
+         * @param texture the texture to update
+         * @param rect an SDL_Rect structure representing the area to update, or NULL
+         *             to update the entire texture
+         * @param pixels the raw pixel data in the format of the texture
+         * @param pitch the number of bytes in a row of pixel data, including padding
+         *              between lines
+         * @return 0 on success or a negative error code on failure; call
+         *         SDL_GetError() for more information.
+         *
+         * @see #SDL_CreateTexture
+         * @see #SDL_LockTexture
+         * @see #SDL_UnlockTexture
+         */
+        public int SDL_UpdateTexture(SDL_Texture texture, final SDL_Rect rect, final Pointer pixels, int pitch);
+
+        /**
+         * <p>Clear the current rendering target with the drawing color.</p>
+         *
+         * <p>This function clears the entire rendering target, ignoring the viewport and
+         * the clip rectangle.</p>
+         *
+         * @param renderer the rendering context
+         * @return 0 on success or a negative error code on failure; call
+         *         SDL_GetError() for more information.
+         *
+         * @since This function is available since SDL 2.0.0.
+         *
+         * @see #SDL_SetRenderDrawColor
+         */
+        public int SDL_RenderClear(SDL_Renderer renderer);
+
+        /**
+         * <p>Copy a portion of the texture to the current rendering target.</p>
+         *
+         * <p>The texture is blended with the destination based on its blend mode set
+         * with SDL_SetTextureBlendMode().</p>
+         *
+         * <p>The texture color is affected based on its color modulation set by
+         * SDL_SetTextureColorMod().</p>
+         *
+         * <p>The texture alpha is affected based on its alpha modulation set by
+         * SDL_SetTextureAlphaMod().</p>
+         *
+         * @param renderer the rendering context
+         * @param texture the source texture
+         * @param srcrect the source SDL_Rect structure or NULL for the entire texture
+         * @param dstrect the destination SDL_Rect structure or NULL for the entire
+         *                rendering target; the texture will be stretched to fill the
+         *                given rectangle
+         * @return 0 on success or a negative error code on failure; call
+         *         SDL_GetError() for more information.
+         *
+         * @see #SDL_RenderCopyEx
+         * @see #SDL_SetTextureAlphaMod
+         * @see #SDL_SetTextureBlendMode
+         * @see #SDL_SetTextureColorMod
+         */
+        public int SDL_RenderCopy(SDL_Renderer renderer, SDL_Texture texture, final SDL_Rect srcrect, final SDL_Rect dstrect);
+
+        /**
+         * <p>Update the screen with any rendering performed since the previous call.</p>
+         *
+         * <p>SDL's rendering functions operate on a backbuffer; that is, calling a
+         * rendering function such as SDL_RenderDrawLine() does not directly put a
+         * line on the screen, but rather updates the backbuffer. As such, you compose
+         * your entire scene and *present* the composed backbuffer to the screen as a
+         * complete picture.</p>
+         *
+         * <p>Therefore, when using SDL's rendering API, one does all drawing intended
+         * for the frame, and then calls this function once per frame to present the
+         * final drawing to the user.</p>
+         *
+         * <p>The backbuffer should be considered invalidated after each present; do not
+         * assume that previous contents will exist between frames. You are strongly
+         * encouraged to call SDL_RenderClear() to initialize the backbuffer before
+         * starting each new frame's drawing, even if you plan to overwrite every
+         * pixel.</p>
+         *
+         * @param renderer the rendering context
+         *
+         * @see #SDL_RenderClear
+         * @see #SDL_RenderDrawLine
+         * @see #SDL_RenderDrawLines
+         * @see #SDL_RenderDrawPoint
+         * @see #SDL_RenderDrawPoints
+         * @see #SDL_RenderDrawRect
+         * @see #SDL_RenderDrawRects
+         * @see #SDL_RenderFillRect
+         * @see #SDL_RenderFillRects
+         * @see #SDL_SetRenderDrawBlendMode
+         * @see #SDL_SetRenderDrawColor
+         */
+        public void SDL_RenderPresent(SDL_Renderer renderer);
+
+        /**
          * <p>Destroy the specified texture.</p>
          *
          * <p>Passing NULL or an otherwise invalid texture will set the SDL error message
@@ -2103,6 +2211,23 @@ public final class LowLevel {
         public SDL_Surface SDL_GetWindowSurface(SDL_Window window);
 
         /**
+         * <p>Copy the window surface to the screen.</p>
+         *
+         * <p>This is the function you use to reflect any changes to the surface on the
+         * screen.</p>
+         *
+         * <p>This function is equivalent to the SDL 1.2 API SDL_Flip().</p>
+         *
+         * @param window the window to update
+         * @return 0 on success or a negative error code on failure; call
+         *         SDL_GetError() for more information.
+         *
+         * @see #SDL_GetWindowSurface
+         * @see #SDL_UpdateWindowSurfaceRects
+         */
+        public int SDL_UpdateWindowSurface(SDL_Window window);
+
+        /**
          * <p>Get the position of a window.</p>
          *
          * <p>If you do not need the value for one of the positions a NULL may be passed
@@ -2416,6 +2541,20 @@ public final class LowLevel {
          * @see #SDL_GL_GetSwapInterval
          */
         public int SDL_GL_SetSwapInterval(int interval);
+
+        /**
+         * <p>Update a window with OpenGL rendering.</p>
+         *
+         * <p>This is used with double-buffered OpenGL contexts, which are the default.</p>
+         *
+         * <p>On macOS, make sure you bind 0 to the draw framebuffer before swapping the
+         * window, otherwise nothing will happen. If you aren't using
+         * glBindFramebuffer(), this is the default and you won't have to do anything
+         * extra.</p>
+         *
+         * @param window the window to change
+         */
+        public void SDL_GL_SwapWindow(SDL_Window window);
         //#endregion
     }
 
