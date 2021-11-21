@@ -758,6 +758,11 @@ public final class LowLevel {
          * General event structure
          */
         public static class SDL_Event extends Union {
+            public SDL_Event(Pointer p) {
+                super(p);
+                read();
+            }
+
             int type;
             /** Common event data */
             SDL_CommonEvent common;
@@ -1182,6 +1187,27 @@ public final class LowLevel {
         public static final int SDL_MOUSEWHEEL_FLIPPED = 1;
 
         /**
+         * <p>Retrieve the current state of the mouse.</p>
+         *
+         * <p>The current button state is returned as a button bitmask, which can be
+         * tested using the {@code SDL_BUTTON(X)} macros (where {@code X} is generally 1 for the
+         * left, 2 for middle, 3 for the right button), and {@code x} and {@code y} are set to the
+         * mouse cursor position relative to the focus window. You can pass NULL for
+         * either {@code x} or {@code y}.</p>
+         *
+         * @param x the x coordinate of the mouse cursor position relative to the
+         *          focus window
+         * @param y the y coordinate of the mouse cursor position relative to the
+         *          focus window
+         * @return a 32-bit button bitmask of the current button state.
+         *
+         * @see #SDL_GetGlobalMouseState
+         * @see #SDL_GetRelativeMouseState
+         * @see #SDL_PumpEvents
+         */
+        public int SDL_GetMouseState(IntByReference x, IntByReference y);
+
+        /**
          * <p>Get the current state of the mouse in relation to the desktop.</p>
          *
          * <p>This works similarly to SDL_GetMouseState(), but the coordinates will be
@@ -1209,6 +1235,12 @@ public final class LowLevel {
          * @see #SDL_CaptureMouse
          */
         public int SDL_GetGlobalMouseState(IntByReference x, IntByReference y);
+
+        public static final int SDL_BUTTON_LEFT = 1;
+        public static final int SDL_BUTTON_MIDDLE = 2;
+        public static final int SDL_BUTTON_RIGHT = 3;
+        public static final int SDL_BUTTON_X1 = 4;
+        public static final int SDL_BUTTON_X2 = 5;
         //#endregion
 
         //#region SDL_mutex.h

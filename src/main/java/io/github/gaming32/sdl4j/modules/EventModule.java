@@ -5,19 +5,21 @@ import java.nio.charset.StandardCharsets;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.Union;
+import com.sun.jna.ptr.IntByReference;
 
 import io.github.gaming32.sdl4j.LowLevel;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_Event;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_KeyboardEvent;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_MouseButtonEvent;
+import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_MouseWheelEvent;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_TextInputEvent;
 import io.github.gaming32.sdl4j.LowLevel.SDL2Library.SDL_WindowEvent;
 import io.github.gaming32.sdl4j.LowLevel.Util;
 import io.github.gaming32.sdl4j.SDL4J.Module;
+import io.github.gaming32.sdl4j.enums.MouseFlags;
 import io.github.gaming32.sdl4j.sdl_enums.SDL4J_EventCode;
 import io.github.gaming32.sdl4j.sdl_enums.SDL_EventType;
-import io.github.gaming32.sdl4j.sdl_enums.SDL_Scancode;
 import io.github.gaming32.sdl4j.sdl_enums.SDL_WindowEventID;
 
 public final class EventModule implements Module {
@@ -83,9 +85,7 @@ public final class EventModule implements Module {
 
     private boolean eventFilter(Pointer ignored, SDL_Event event) {
         SDL2Library lib = LowLevel.getInstance();
-
-        SDL_Event newdownevent, newupevent, newevent = Util.copyStructure(SDL_Event.class, event);
-        int x, y, i;
+        SDL_Event newevent = Util.copyStructure(SDL_Event.class, event);
 
         switch (event.getType()) {
             case SDL_EventType.WINDOWEVENT:
@@ -150,9 +150,60 @@ public final class EventModule implements Module {
             case SDL_EventType.MOUSEBUTTONDOWN:
             case SDL_EventType.MOUSEBUTTONUP:
                 SDL_MouseButtonEvent buttonEvent = event.getProperValue(SDL_MouseButtonEvent.class);
+                buttonEvent.readField("button");
+                if ((buttonEvent.button & MouseFlags.KEEP) != 0) {
+                    buttonEvent.writeField("button", buttonEvent.button ^ MouseFlags.KEEP);
+                } else if (buttonEvent.button >= MouseFlags.WHEELUP) {
+                    buttonEvent.writeField("button", buttonEvent.button + (MouseFlags.X1 - MouseFlags.WHEELUP));
+                }
+                break;
+            case SDL_EventType.MOUSEWHEEL:
+                SDL_MouseWheelEvent wheelEvent = event.getProperValue(SDL_MouseWheelEvent.class);
+                if ((int)wheelEvent.readField("y") == 0 && (int)wheelEvent.readField("x") == 0) {
+                    return false;
+                }
+
+                IntByReference xRef = new IntByReference();
+                IntByReference yRef = new IntByReference();
+                lib.SDL_GetMouseState(xRef, yRef);
+                int x = xRef.getValue(), y = yRef.getValue();
+
+                int which = (int)event.getProperValue(SDL_MouseButtonEvent.class).readField("which");
+
+                SDL_MouseButtonEvent newDownEvent = new SDL_MouseButtonEvent();
+                newDownEvent.type = SDL_EventType.MOUSEBUTTONDOWN;
+                newDownEvent.x = x;
+                newDownEvent.y = y;
+                newDownEvent.state = SDL2Library.SDL_PRESSED;
+                newDownEvent.clicks = 1;
+                newDownEvent.which = which;
+
+                SDL_MouseButtonEvent newUpEvent = new SDL_MouseButtonEvent();
+                newUpEvent.type = SDL_EventType.MOUSEBUTTONUP;
+                newUpEvent.x = x;
+                newUpEvent.y = y;
+                newUpEvent.state = SDL2Library.SDL_RELEASED;
+                newUpEvent.clicks = 1;
+                newUpEvent.which = which;
+
+                if (wheelEvent.y > 0) {
+                    newDownEvent.button = (byte)(MouseFlags.WHEELUP | MouseFlags.KEEP);
+                    newUpEvent.button = (byte)(MouseFlags.WHEELUP | MouseFlags.KEEP);
+                } else {
+                    newDownEvent.button = (byte)(MouseFlags.WHEELDOWN | MouseFlags.KEEP);
+                    newUpEvent.button = (byte)(MouseFlags.WHEELDOWN | MouseFlags.KEEP);
+                }
+                newDownEvent.write();
+                newUpEvent.write();
+
+                SDL_Event newDownEventUnion = new SDL_Event(newDownEvent.getPointer());
+                SDL_Event newUpEventUnion = new SDL_Event(newUpEvent.getPointer());
+                for (int i = 0; i < Math.abs(wheelEvent.y); i++) {
+                    lib.SDL_PushEvent(newDownEventUnion);
+                    lib.SDL_PushEvent(newUpEventUnion);
+                }
                 break;
         }
-
         return lib.SDL_EventState(event.getType(), SDL2Library.SDL_QUERY);
     }
 
