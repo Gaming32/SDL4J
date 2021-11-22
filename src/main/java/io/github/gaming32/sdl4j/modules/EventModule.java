@@ -49,6 +49,9 @@ public final class EventModule implements Module {
         if (INSTANCE != null) {
             throw new IllegalStateException("EventModule instance already exists. Did you mean to use getInstance()?");
         }
+        for (int i = 0; i < MAX_SCAN_UNICODE; i++) {
+            scanUnicode[i] = new ScanAndUnicode(0, null);
+        }
     }
 
     public static EventModule getInstance() {
